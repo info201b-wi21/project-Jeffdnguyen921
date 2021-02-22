@@ -1,1 +1,1 @@
-This is gonna be a project!
+This is gonna be our main project!
