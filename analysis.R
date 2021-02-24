@@ -4,7 +4,7 @@ SSDB_Raw_Data_df <- read_csv("https://raw.githubusercontent.com/info201b-wi21/pr
 View(SSDB_Raw_Data_df)
 Unemployment_df <- read_csv("https://raw.githubusercontent.com/info201b-wi21/project-Jeffdnguyen921/main/data/Unemployment.csv?token=ASMBDXGZ36J2NRSGNKLLWDLAH24MU")
 View(Unemployment_df) 
-us_cities <- read_csv("data/uscities.csv")
+us_cities <- read_csv("https://raw.githubusercontent.com/info201b-wi21/project-Jeffdnguyen921/main/data/uscities.csv?token=ASMBDXGJXITVXINJCIPTACLAH7BCI")
 
 features <- colnames(us_cities)
 
@@ -23,3 +23,4 @@ SSDB_df <- inner_join(SSDB_df_state_city, us_city_state_city, by = "location")
 # rename so unemployment_df and SSDB both have 'county_fips' column
 
 Unemployment_df <- rename(Unemployment_df, county_fips = fips_txt)
+
