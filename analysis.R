@@ -1,11 +1,21 @@
 
 SSDB_Raw_Data_df <- read_csv("https://raw.githubusercontent.com/info201b-wi21/project-Jeffdnguyen921/main/data/SSDB_Raw_Data_Compiled.csv?token=ASLKMK4FWIIAM7YWLDYYV6DAH4CY2")
 
+Victim_df <- read.csv("https://raw.githubusercontent.com/info201b-wi21/project-Jeffdnguyen921/main/data/SSDB_Victim_Raw_Data.csv?token=ASLKMK6AE6ERKLKXHWTRAJTAH47BW")
+
 Unemployment_df <- read_csv("https://raw.githubusercontent.com/info201b-wi21/project-Jeffdnguyen921/main/data/Unemployment.Compiled.csv?token=ASLKMK2CIMZKQEZ2I2AZ65DAH4KC2")
 
 us_cities <- read_csv("https://raw.githubusercontent.com/info201b-wi21/project-Jeffdnguyen921/main/data/uscities.csv?token=ASLKMK4UTUNAYL7DBRIZLG3AH4J3E")
 
 features <- colnames(us_cities)
+
+# Put together the casualties of each match shooting by shooting ID
+Casualties_df <- Victim_df%>%
+  select(incidentid, injury)
+
+Victim_df <- Victim_df%>%
+  group_by(incidentid)%>%
+  summarise(casualties = n(), injured = n(wounded), death = n(fatal))
 
 # joining county_fips in school_schooting database using a complete USA  
 # location dataset so that SSDB and Unemployment both have county fips.
@@ -17,7 +27,15 @@ us_city_state_city <- us_cities %>%
 SSDB_df_state_city <- SSDB_Raw_Data_df %>%
   unite("location", City, State, sep = ", ")
 
-SSDB_df <- inner_join(SSDB_df_state_city, us_city_state_city, by = "location")
+SSDB_df <- SSDB_df_state_city%>%
+  inner_join(us_city_state_city, by = "location")%>%
+  select(Incident_ID, county_fips, Date, School, location, Situation, Targets, Accomplice,
+         Officer_Involved, Bullied, Domestic_Violence, Gang_Related, Shots_Fired,
+         weapontype)
+
+# joining county_fips in school_schooting database using a complete USA
+
+
 
 # rename so unemployment_df and SSDB both have 'county_fips' column
 
