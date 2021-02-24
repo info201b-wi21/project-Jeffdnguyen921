@@ -1,4 +1,3 @@
-
 SSDB_Raw_Data_df <- read_csv("https://raw.githubusercontent.com/info201b-wi21/project-Jeffdnguyen921/main/data/SSDB_Raw_Data_Compiled.csv?token=ASLKMK4FWIIAM7YWLDYYV6DAH4CY2")
 
 Victim_df <- read.csv("https://raw.githubusercontent.com/info201b-wi21/project-Jeffdnguyen921/main/data/SSDB_Victim_Raw_Data.csv?token=ASLKMK6AE6ERKLKXHWTRAJTAH47BW")
@@ -60,7 +59,4 @@ select(county_fips, area_name, Unemployment_rate_2000, Unemployment_rate_2001,
 # Merge unemployment data with SSDB
 SSDB_Unemployment_df <- SSDB_df%>%
   inner_join(Unemployment_df)
-
-
-
 
