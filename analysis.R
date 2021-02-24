@@ -11,11 +11,12 @@ features <- colnames(us_cities)
 
 # Put together the casualties of each match shooting by shooting ID
 Casualties_df <- Victim_df%>%
-  select(incidentid, injury)
-
-Victim_df <- Victim_df%>%
-  group_by(incidentid)%>%
-  summarise(casualties = n(), injured = n(wounded), death = n(fatal))
+  select(incidentid, injury)%>%
+  rename(Incident_ID = incidentid)%>%
+  rename(Victim_outcome = injury)%>%
+  mutate(Victim_outcome = ifelse(Victim_outcome %in% "", "None", Victim_outcome)) %>% #https://stackoverflow.com/questions/47562321/split-one-variable-into-multiple-variables-in-r
+  mutate(people = 1)%>%
+  pivot_wider(names_from = Victim_outcome, values_from = people, values_fn = sum, values_fill = 0)
 
 # joining county_fips in school_schooting database using a complete USA  
 # location dataset so that SSDB and Unemployment both have county fips.
@@ -29,13 +30,15 @@ SSDB_df_state_city <- SSDB_Raw_Data_df %>%
 
 SSDB_df <- SSDB_df_state_city%>%
   inner_join(us_city_state_city, by = "location")%>%
-  select(Incident_ID, county_fips, Date, School, location, Situation, Targets, Accomplice,
+  rename(campus_location = Location)%>%
+  select(Incident_ID, county_fips, Date, School, campus_location, location, Situation, Targets, Accomplice,
          Officer_Involved, Bullied, Domestic_Violence, Gang_Related, Shots_Fired,
          weapontype)
 
 # joining county_fips in school_schooting database using a complete USA
 
-
+SSDB_Victim_df <- Casualties_df%>%
+  inner_join(SSDB_df, by = "Incident_ID")
 
 # rename so unemployment_df and SSDB both have 'county_fips' column
 
@@ -51,8 +54,12 @@ select(county_fips, area_name, Unemployment_rate_2000, Unemployment_rate_2001,
        Unemployment_rate_2008, Unemployment_rate_2009, Unemployment_rate_2010, 
        Unemployment_rate_2011, Unemployment_rate_2012, Unemployment_rate_2013, 
        Unemployment_rate_2014, Unemployment_rate_2015, Unemployment_rate_2016, 
-       Unemployment_rate_2017, Unemployment_rate_2018, Unemployment_rate_2019)
+       Unemployment_rate_2017, Unemployment_rate_2018, Unemployment_rate_2019, 
+       Median_Household_Income_2019, Med_HH_Income_Percent_of_State_Total_2019)
 
+# Merge unemployment data with SSDB
+SSDB_Unemployment_df <- SSDB_df%>%
+  inner_join(Unemployment_df)
 
 
 
