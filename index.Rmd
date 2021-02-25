@@ -6,7 +6,8 @@ output: html_document
 ---
 
 ```{r setup, include=FALSE}
-
+source("analysis.R")
+library(knitr)
 ```
 # INFO 201 Course Project
 
@@ -57,6 +58,21 @@ https://www.ncbi.nlm.nih.gov/pmc/articles/PMC6199901/**
 - How data was collected
   - Data was collected by the US Department of Agricultures Economic Research Service.
     - Data was collected using Department of Labor and other US Department data and putting all the data gathered by the agencies in a nuanced list for use.
+    
+### Data Samples
+#### School Shooting Data Sample
+```{r}
+School_Shooting <- SSDB_Victim_df%>%
+  select(Date, School, location, Situation, Wounded, Fatal, None)
+kable(School_Shooting[1:5, ])
+```
+#### Unemployment/Median Household Income Data Sample
+```{r}
+Unemployment_Income <- Unemployment_df%>%
+  select(area_name, Unemployment_rate_2019, Median_Household_Income_2019, Med_HH_Income_Percent_of_State_Total_2019)
+kable(Unemployment_Income[1:5, ])
+```
+
 
 --------
 ## Section 3 
