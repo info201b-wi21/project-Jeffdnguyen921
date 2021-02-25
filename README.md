@@ -9,7 +9,7 @@ Luka Marceta,
 Quang Nguyen,
 Liza Moore
 
---------
+---------
 ## Section 1 ##
 ### Problem Domain ###
 Our proposal seeks to investigate the relationship between income and school shootings. Our group has defined a school shooting as “any time a gun goes off in an academic setting”. The database we have selected is the only comprehensive list of all school shootings in America. The definition of a school shooting is abstract and the Center for Homeland Defense and Security acknowledges the limitations of their list, disclosing the ambiguity of a school shooting requires a compassionate mindset to take in myriad variables. Casting a “wide net” to catch as many incidents as possible. The phenomena recorded in each incident are diverse, including “Bullying,” “Illegal Activity,” “Indiscriminate/Targeted”. Moreover, each incident has a reliability score that is found by assessing the credibility of the source
