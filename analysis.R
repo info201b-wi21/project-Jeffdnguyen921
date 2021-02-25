@@ -59,4 +59,3 @@ select(county_fips, area_name, Unemployment_rate_2000, Unemployment_rate_2001,
 # Merge unemployment data with SSDB
 SSDB_Unemployment_df <- SSDB_df%>%
   inner_join(Unemployment_df)
-
