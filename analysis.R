@@ -39,7 +39,7 @@ SSDB_df <- SSDB_Raw_Data_df %>%
          weapontype)
 
 #joining county_fips in school_schooting database using a complete USA
-SSDB_Final_df <- left_join(SSDB_df, Casualties_df, by = "Incident_ID")
+SSDB_Victim_df <- left_join(SSDB_df, Casualties_df, by = "Incident_ID")
 
 # rename so unemployment_df and SSDB both have 'county_fips' column
 Unemployment_df <- Unemployment_df %>%
