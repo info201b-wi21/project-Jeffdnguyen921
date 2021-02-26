@@ -90,6 +90,27 @@ This sample data set shows the economic situation of each area in the United Sta
 
 ## 2.2 Summary Statistics
 
+### Graphs
+
+```{r}
+Shooting_Over_Time_plot
+```
+This graph explains the number of school shootings from 1970 to 2020. The y-axis represents the number of shootings in occurrences and the x-axis represents the time in years.
+
+```{r}
+Unemployment_Over_Time_plot
+```
+This graph shows the unemployment rate from 2000 to 2019. The y-axis represents the unemployment rate by percentage, the x-axis represents time in years.
+
+```{r}
+United_States_Unemployment_plot
+```
+
+
+```{r}
+Shootings_by_Location_plot
+```
+
 ### School Shootings
 
 ### Unemployment Data
@@ -98,7 +119,7 @@ This sample data set shows the economic situation of each area in the United Sta
 
 ### Analysis Questions
 
-*Liza:* - Do high income areas have higher or lower rates of shootings? - This question brings forth the differences in rates relative to the background of students in a given area. - Of high income areas, are there more shootings at elementary, middle or high schools? - This question helps look into where the concentration of shootings are and where our focus might be in the future.
+*Liza:* - Do high income areas have higher or lower rates of shootings? - This question brings forth the differences in rates relative to the background of students in a given area. - Of high income areas, what are the occurrences of shootings at the different levels of schools? - This question helps look into where the concentration of shootings are and where our focus might be in the future.
 
 *Luka:* - Are automatic weapons more prevalent in shootings in higher income areas? - This question help understanding the widespread automatic weapons issue relative to income. - Is law enforcement more likely to apprehend the shooter in higher income areas? - This question helps answer the impact that law enforcement might have on higher income areas that have more funding for police departments.
 

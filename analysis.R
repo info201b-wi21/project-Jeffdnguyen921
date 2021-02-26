@@ -60,7 +60,15 @@ select(county_fips, area_name, Unemployment_rate_2000, Unemployment_rate_2001,
 SSDB_casualty_df <- SSDB_df%>%
   inner_join(SSDB_Victim_df)
 
+# Income Areas
+high_income <- Unemployment_df%>%
+  filter(Med_HH_Income_Percent_of_State_Total_2019 > 115)
 
+mid_income <- Unemployment_df%>%
+  filter(Med_HH_Income_Percent_of_State_Total_2019 >= 85, Med_HH_Income_Percent_of_State_Total_2019 <= 115)
+
+lower_income <- Unemployment_df%>%
+  filter(Med_HH_Income_Percent_of_State_Total_2019 < 85)
 ########################### SECTION 3 ##########################################
 View(Unemployment_df)
 View(SSDB_casualty_df)
@@ -102,19 +110,18 @@ county_casualties_income_df <- SSDB_county_casualties_df %>%
   inner_join(unemployment_county_income_df, by ="county_fips")
 View(county_casualties_income_df)
 
-# Q3: Of high income areas, are there more shootings at elementary, middle or high schools?
+# Q3: Of high income areas, what are the occurrences of shootings at the different levels of schools?
 
 # For SSDB: county_fips, school level
 # For Unemployment: county_fips, med_HH_income % state total == high income
 
 # Merge unemployment data with SSDB
 SSDB_Unemployment_df <- SSDB_df %>%
-  inner_join(Unemployment_df)%>%
+  inner_join(high_income)%>%
   select(School_Level, Med_HH_Income_Percent_of_State_Total_2019)
 
 # Find Higher Income Areas >100% of state income
 High_income_area <- SSDB_Unemployment_df%>%
-  filter(Med_HH_Income_Percent_of_State_Total_2019 > 115)%>%
   select(School_Level)
 
 # Find the amount of shootings by each group
@@ -123,6 +130,7 @@ School_level_shootings <- High_income_area%>%
   #https://stackoverflow.com/questions/47562321/split-one-variable-into-multiple-variables-in-r
   mutate(Shootings = 1) %>%
   pivot_wider(names_from = School_Level, values_from = Shootings, values_fn = sum, values_fill = 0)
+  
   
 ## Creating The First Plot #############################################################################
 
@@ -262,3 +270,5 @@ max_us_unemployment_2019 <- Unemployment_df %>%
 
 unemployment_description_2019 <- list(as.list(max_us_unemployment_2019), as.list(us_unemployment_2019))
 
+
+  
