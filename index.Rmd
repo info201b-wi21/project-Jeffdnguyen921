@@ -66,13 +66,14 @@ School_Shooting <- SSDB_Victim_df%>%
   select(Date, School, location, Situation, Wounded, Fatal, None)
 kable(School_Shooting[1:5, ])
 ```
+This data sample shows the date of the school shooting and the school where the shooting occured. This data further goes into depth describing the situation of the shooting explaining whether or not the shoot was accidental or had motives. Finally it includes the outcome of the victims in the shooting from shots that had no impact on people to wounded shots that injured and finally fatal shots that killed.
 #### Unemployment/Median Household Income Data Sample
 ```{r}
 Unemployment_Income <- Unemployment_df%>%
   select(area_name, Unemployment_rate_2019, Median_Household_Income_2019, Med_HH_Income_Percent_of_State_Total_2019)
 kable(Unemployment_Income[1:5, ])
 ```
-
+This sample data set shows the economic situation of each area in the United States. It provides the location with the given county and state in the area_name. The unemployment rate is provided in each county in the United States as well as nationally. The median household income of each area is also provided in this data set. Finally, there is the median household income percentage as it relates to state. This information shows how much lower or higher that county's median household income is relative to their respectful state average median household income. 
 
 --------
 ## Section 3 
