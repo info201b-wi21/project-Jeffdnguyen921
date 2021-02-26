@@ -9,95 +9,99 @@ output: html_document
 source("analysis.R")
 library(knitr)
 ```
+
 # INFO 201 Course Project
 
-# Project Domain: School Shootings and Income 
-Jeffrey Nguyen,
-Luka Marceta,
-Quang Nguyen,
-Liza Moore
+# Project Domain: School Shootings and Income
 
---------
-## Section 1 
-### Problem Domain 
-Our proposal seeks to investigate the relationship between income and school shootings. Our group has defined a school shooting as “any time a gun goes off in an academic setting”. The database we have selected is the only comprehensive list of all school shootings in America. The definition of a school shooting is abstract and the Center for Homeland Defense and Security acknowledges the limitations of their list, disclosing the ambiguity of a school shooting requires a compassionate mindset to take in myriad variables. Casting a “wide net” to catch as many incidents as possible. The phenomena recorded in each incident are diverse, including “Bullying,” “Illegal Activity,” “Indiscriminate/Targeted”. Moreover, each incident has a reliability score that is found by assessing the credibility of the source
+Jeffrey Nguyen, Luka Marceta, Quang Nguyen, Liza Moore
 
-The other data set we gathered as a proxy to the wealth of each school is a comprehensive list of the unemployment and median household income in a given state and county. The data set is from the US Department of Agriculture. This data set was gathered overtime from each specific region from 2000-2019, using census data as well as local data from authorities. Overall, it provides a comprehensive list that gives strong economic data by county.  
+|                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                     |
+|-------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------|
+| \#\# Section 1 \#\#\# Problem Domain Our proposal seeks to investigate the relationship between income and school shootings. Our group has defined a school shooting as "any time a gun goes off in an academic setting". The database we have selected is the only comprehensive list of all school shootings in America. The definition of a school shooting is abstract and the Center for Homeland Defense and Security acknowledges the limitations of their list, disclosing the ambiguity of a school shooting requires a compassionate mindset to take in myriad variables. Casting a "wide net" to catch as many incidents as possible. The phenomena recorded in each incident are diverse, including "Bullying," "Illegal Activity," "Indiscriminate/Targeted". Moreover, each incident has a reliability score that is found by assessing the credibility of the source |
+| The other data set we gathered as a proxy to the wealth of each school is a comprehensive list of the unemployment and median household income in a given state and county. The data set is from the US Department of Agriculture. This data set was gathered overtime from each specific region from 2000-2019, using census data as well as local data from authorities. Overall, it provides a comprehensive list that gives strong economic data by county.                                                                                                                                                                                                                                                                                                                                                                                                                     |
+| Although our group's intention is to merely summarize and consolidate wealth and school shooting incidents, we are interested in whether there are any differences in motivation, weapon, or legal ramifications. Understanding of economic and financial distress relative to school shooting and violence is important to understand the given report.                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                            |
+| **Income inequality and mass shootings in the United States <https://bmcpublichealth.biomedcentral.com/articles/10.1186/s12889-019-7490-x>**                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                        |
+| **Income Inequality, Household Income, and Mass Shooting in the United States <https://www.ncbi.nlm.nih.gov/pmc/articles/PMC6199901/>**                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                             |
 
-Although our group’s intention is to merely summarize and consolidate wealth and school shooting incidents, we are interested in whether there are any differences in motivation, weapon, or legal ramifications. Understanding of economic and financial distress relative to school shooting and violence is important to understand the given report.
+## Section 2
 
-**Income inequality and mass shootings in the United States
-https://bmcpublichealth.biomedcentral.com/articles/10.1186/s12889-019-7490-x**
+### Data Description
 
-**Income Inequality, Household Income, and Mass Shooting in the United States
-https://www.ncbi.nlm.nih.gov/pmc/articles/PMC6199901/**
-
-------------
-## Section 2 
-### Data Description 
 #### [K-12 School Shooting comprehensive list](https://www.chds.us/ssdb/data-map/)
-- Description of Data set
-  - Providing information on school shooting from 1970 to 2020 from the school and the date to more strenuous information including narrative and summary.
-- How data was collected
-  1. Preliminary research and merging multiple data sources
-    - From "US Secret Service, FBI, and Department of Education; media or advocacy groups including The Washington Post, CNN, Gun Violence Archive, Everytown for Gun Safety, Education Weekly, and Mother Jones; and websites or blogs including Columbines Angels, Wikipedia, schoolshootingdatabase.com, and schoolshootingtracker.com."
-  2. Detailed research
-    - Assessment of situation and detailed information from teachers to students shot and going into depth on the exact circumstances and motivations that might have prompted the event.
-  3. Score reliability of data
-    - Relaibility on information ranging from (1-5) weakest to strongest:
-      1. Blogs
-      2. Single newspaper articles or online news
-      3. Multiple News Sources
-      4. Hundreds of News Sources or Statement/Interview from law enforcement
-      5. Court Records or Police Reports
 
+-   Description of Data set
+
+    -   Providing information on school shooting from 1970 to 2020 from the school and the date to more strenuous information including narrative and summary.
+
+-   How data was collected
+
+    1.  Preliminary research and merging multiple data sources
+
+    -   From "US Secret Service, FBI, and Department of Education; media or advocacy groups including The Washington Post, CNN, Gun Violence Archive, Everytown for Gun Safety, Education Weekly, and Mother Jones; and websites or blogs including Columbines Angels, Wikipedia, schoolshootingdatabase.com, and schoolshootingtracker.com."
+
+    2.  Detailed research
+
+    -   Assessment of situation and detailed information from teachers to students shot and going into depth on the exact circumstances and motivations that might have prompted the event.
+
+    3.  Score reliability of data
+
+    -   Relaibility on information ranging from (1-5) weakest to strongest:
+
+        1.  Blogs
+        2.  Single newspaper articles or online news
+        3.  Multiple News Sources
+        4.  Hundreds of News Sources or Statement/Interview from law enforcement
+        5.  Court Records or Police Reports
 
 #### [Median household income and Unemployment for US, States, and Counties](https://www.ers.usda.gov/data-products/county-level-data-sets/download-data/)
-- Description of Data set
-  - Information on the household income and unemployment in a given county, state, and nationally. Provided information from rate to actual numbers in those respected locations.
-- How data was collected
-  - Data was collected by the US Department of Agricultures Economic Research Service.
-    - Data was collected using Department of Labor and other US Department data and putting all the data gathered by the agencies in a nuanced list for use.
-    
+
+-   Description of Data set
+
+    -   Information on the household income and unemployment in a given county, state, and nationally. Provided information from rate to actual numbers in those respected locations.
+
+-   How data was collected
+
+    -   Data was collected by the US Department of Agricultures Economic Research Service.
+
+        -   Data was collected using Department of Labor and other US Department data and putting all the data gathered by the agencies in a nuanced list for use.
+
 ### Data Samples
+
 #### School Shooting Data Sample
+
 ```{r}
 School_Shooting <- SSDB_Victim_df%>%
+
   select(Date, School, location, Situation, Wounded, Fatal, None)
+
 kable(School_Shooting[1:5, ])
 ```
+
 #### Unemployment/Median Household Income Data Sample
+
 ```{r}
 Unemployment_Income <- Unemployment_df%>%
   select(area_name, Unemployment_rate_2019, Median_Household_Income_2019, Med_HH_Income_Percent_of_State_Total_2019)
 kable(Unemployment_Income[1:5, ])
 ```
 
+------------------------------------------------------------------------
 
---------
-## Section 3 
-### Analysis Questions 
-*Liza:*
-  - Do high income areas have higher or lower rates of shootings?
-    - This question brings forth the differences in rates relative to the background of students in a given area.
-  - Of high income areas, are there more shootings at elementary, middle or high schools?
-    - This question helps look into where the concentration of shootings are and where our focus might be in the future.
+## 2.2 Summary Statistics
 
-*Luka:*
-  - Are automatic weapons more prevalent in shootings in higher income areas?
-    - This question help understanding the widespread automatic weapons issue relative to income.
-  - Is law enforcement more likely to apprehend the shooter in higher income areas?
-    - This question helps answer the impact that law enforcement might have on higher income areas that have more funding for police departments.
+### School Shootings
 
-*Quang:*
-  - Does income dictate the result of a school shooting? (casualties / shooter livelihood)
-    - This question helps understanding of inequalities that different classes face when experiencing the same situation.
-  - Does income affect the number of casualties in a mass shooting?
-    - This question also addresses how an individual class might dictate the outcome of a school shooting.
+### Unemployment Data
 
-*Jeffrey:*
-  - How does the deaths during a shootings in low income areas differ to the rate of shootings in high income areas?
-    - This is a comparison question that address deaths as a form to look into how class involves the survival of students.
-  - How does mass shootings in low income areas differ in comparison to high income areas?
-    - This question looks at mass shootings in an attempt to understand the prevalence between classes.
+## Section 3
 
+### Analysis Questions
+
+*Liza:* - Do high income areas have higher or lower rates of shootings? - This question brings forth the differences in rates relative to the background of students in a given area. - Of high income areas, are there more shootings at elementary, middle or high schools? - This question helps look into where the concentration of shootings are and where our focus might be in the future.
+
+*Luka:* - Are automatic weapons more prevalent in shootings in higher income areas? - This question help understanding the widespread automatic weapons issue relative to income. - Is law enforcement more likely to apprehend the shooter in higher income areas? - This question helps answer the impact that law enforcement might have on higher income areas that have more funding for police departments.
+
+*Quang:* - Does income dictate the result of a school shooting? (casualties / shooter livelihood) - This question helps understanding of inequalities that different classes face when experiencing the same situation. - Does income affect the number of casualties in a mass shooting? - This question also addresses how an individual class might dictate the outcome of a school shooting.
+
+*Jeffrey:* - How does the deaths during a shootings in low income areas differ to the rate of shootings in high income areas? - This is a comparison question that address deaths as a form to look into how class involves the survival of students. - How does mass shootings in low income areas differ in comparison to high income areas? - This question looks at mass shootings in an attempt to understand the prevalence between classes.
