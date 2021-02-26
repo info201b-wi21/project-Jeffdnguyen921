@@ -3,6 +3,7 @@ library("tidyverse")
 library("dplyr")
 library("ggplot2")
 
+
 SSDB_Raw_Data_df <- read_csv("https://raw.githubusercontent.com/info201b-wi21/project-Jeffdnguyen921/main/data/SSDB_Raw_Data_Compiled.csv?token=ASLKMK4FWIIAM7YWLDYYV6DAH4CY2")
 
 Victim_df <- read.csv("https://raw.githubusercontent.com/info201b-wi21/project-Jeffdnguyen921/main/data/SSDB_Victim_Raw_Data.csv?token=ASLKMK6AE6ERKLKXHWTRAJTAH47BW")
@@ -61,6 +62,7 @@ select(county_fips, area_name, Unemployment_rate_2000, Unemployment_rate_2001,
        Unemployment_rate_2017, Unemployment_rate_2018, Unemployment_rate_2019, 
        Median_Household_Income_2019, Med_HH_Income_Percent_of_State_Total_2019)
 
+<<<<<<< HEAD
 # Merge victim data with SSDB
 SSDB_casualty_df <- SSDB_df%>%
   inner_join(SSDB_Victim_df)
@@ -135,6 +137,56 @@ county_high_income_df <-
 county_school_income_df <- county_school_df %>% 
   inner_join(unemployment_county_income, by ="county_fips")
 View(county_school_income_df)
+
+# Merge unemployment data with SSDB
+SSDB_victim_ <- SSDB_df%>%
+  inner_join(Unemployment_df)
+
+# sample tables
+School_Shooting <- SSDB_Victim_df%>%
+  select(Date, School, location, Situation, Wounded, Fatal, None)
+
+Unemployment_Income <- Unemployment_df%>%
+  select(area_name, Unemployment_rate_2019, Median_Household_Income_2019, 
+         Med_HH_Income_Percent_of_State_Total_2019)
+
+#2.2 Summary Statistics 
+
+## mean, max school shootings
+SS_incidents_2019 <- SSDB_df %>%
+  filter(Date >= "2019-01-01" & Date <= "2019-12-31") %>%
+  length()
+  
+SS_casulties <- SSDB_Victim_df %>%
+  filter(Date >= "2019-01-01" & Date <= "2019-12-31") %>%
+  summarise(Fatal = sum(Fatal), Wounded = sum(Wounded)) %>%
+  as.list()
+
+gun_type <- SSDB_df %>%
+  distinct(weapontype) %>%
+  drop_na() %>%
+  filter(weapontype == "Handgun" | weapontype == "Rifle" | weapontype == "Shotgun") %>%
+  as.list()
+
+SS_description_2019 <- list(SS_incidents_2019, SS_casulties, gun_type)
+  
+## mean, max unemployment data 2019
+us_unemployment_2019 <- slice(Unemployment_df, 1) %>%
+  select(Unemployment_rate_2019, Median_Household_Income_2019)
+
+max_us_unemployment_2019 <- Unemployment_df %>%
+  select(area_name, county_fips, Unemployment_rate_2019, Median_Household_Income_2019,
+         Med_HH_Income_Percent_of_State_Total_2019) %>%
+  summarise(max_unemployment = max(Unemployment_rate_2019, na.rm = T),
+            max_household_income = max(Median_Household_Income_2019, na.rm = T),
+            max_percent_of_state = max(Med_HH_Income_Percent_of_State_Total_2019,  na.rm = T))
+
+unemployment_description_2019 <- list(as.list(max_us_unemployment_2019), as.list(us_unemployment_2019))
+
+
+  
+
+>>>>>>> Liza_thursday
 
 
 
