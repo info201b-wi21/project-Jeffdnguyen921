@@ -34,7 +34,7 @@ SSDB_df <- SSDB_Raw_Data_df %>%
   unite("location", City, State, sep = ", ") %>%
   inner_join(us_city_state_city, by = "location")%>%
   rename(campus_location = Location)%>%
-  select(Incident_ID, county_fips, Date, School, campus_location, location, Situation, Targets, Accomplice,
+  select(Incident_ID, county_fips, Date, School, School_Level, campus_location, location, Situation, Targets, Accomplice,
          Officer_Involved, Bullied, Domestic_Violence, Gang_Related, Shots_Fired,
          weapontype)
 
@@ -83,8 +83,8 @@ unemployment_county_income_df <- Unemployment_df %>%
 View(unemployment_county_income_df) #REMOVE
 
 # Need to combine SSDB county fips to Unemployment county fips
-county_rifle_income_df <- SSDB_casualty_county_rifle %>% 
-  inner_join(unemployment_county_income, by = "county_fips")
+county_rifle_income_df <- SSDB_casualty_county_rifle_df %>% 
+  inner_join(unemployment_county_income_df, by = "county_fips")
 View(county_rifle_income_df)
 
 # Q2: Does income affect the number of casualties in a mass shooting?
@@ -99,7 +99,7 @@ View(SSDB_county_casualties_df)
 
 # Combine SSDB county casualties with unemployment county income
 county_casualties_income_df <- SSDB_county_casualties_df %>% 
-  inner_join(unemployment_county_income, by ="county_fips")
+  inner_join(unemployment_county_income_df, by ="county_fips")
 View(county_casualties_income_df)
 
 # Q3: Of high income areas, are there more shootings at elementary, middle or high schools?
@@ -107,34 +107,23 @@ View(county_casualties_income_df)
 # For SSDB: county_fips, school level
 # For Unemployment: county_fips, med_HH_income % state total == high income
 
-# First create a school shooting df that has school level
-SSDB_df_school_level <- SSDB_df_state_city%>%
-  inner_join(us_city_state_city, by = "location")%>%
-  rename(campus_location = Location)%>%
-  select(Incident_ID, county_fips, Date, School, School_Level, campus_location, location, Situation, Targets, Accomplice,
-         Officer_Involved, Bullied, Domestic_Violence, Gang_Related, Shots_Fired,
-         weapontype)
-
-# SSDB: county_fips, school level
-county_school_df <- SSDB_df_school_level %>% 
-  select(county_fips, School_Level)
-View(county_school_df)
-
-# STILL NEED TO FILTER FOR HIGH INCOME AREAS
-# Find average medium income household benchmark (taken from 3 person assumption)
-us_household_income_by_tier_df <- read_csv(Users/lukamarceta/Downloads/data-LuVX3.csv)
-
-county_high_income_df <- 
-
-# Combine
-county_school_income_df <- county_school_df %>% 
-  inner_join(unemployment_county_income, by ="county_fips")
-View(county_school_income_df)
-
 # Merge unemployment data with SSDB
 SSDB_Unemployment_df <- SSDB_df %>%
-  inner_join(Unemployment_df)
+  inner_join(Unemployment_df)%>%
+  select(School_Level, Med_HH_Income_Percent_of_State_Total_2019)
 
+# Find Higher Income Areas >100% of state income
+High_income_area <- SSDB_Unemployment_df%>%
+  filter(Med_HH_Income_Percent_of_State_Total_2019 > 115)%>%
+  select(School_Level)
+
+# Find the amount of shootings by each group
+School_level_shootings <- High_income_area%>%
+  mutate(School_Level = ifelse(School_Level %in% "", "None", School_Level)) %>% 
+  #https://stackoverflow.com/questions/47562321/split-one-variable-into-multiple-variables-in-r
+  mutate(Shootings = 1) %>%
+  pivot_wider(names_from = School_Level, values_from = Shootings, values_fn = sum, values_fill = 0)
+  
 ## Creating The First Plot #############################################################################
 
 Shooting_Over_Time_DF <- SSDB_Final_df %>%
