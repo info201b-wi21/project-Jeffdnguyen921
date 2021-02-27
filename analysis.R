@@ -58,7 +58,9 @@ select(county_fips, area_name, Unemployment_rate_2000, Unemployment_rate_2001,
 
 # Merge victim data with SSDB
 SSDB_casualty_df <- SSDB_df%>%
-  inner_join(SSDB_Victim_df)
+  inner_join(SSDB_Victim_df, by = "Incident_ID") %>%
+  unique()
+  
 
 # Income Areas
 high_income <- Unemployment_df%>%
@@ -69,6 +71,7 @@ mid_income <- Unemployment_df%>%
 
 lower_income <- Unemployment_df%>%
   filter(Med_HH_Income_Percent_of_State_Total_2019 < 85)
+
 ########################### SECTION 3 ##########################################
 View(Unemployment_df)
 View(SSDB_casualty_df)
@@ -241,21 +244,28 @@ Unemployment_Income <- Unemployment_df%>%
 
 ## mean, max school shootings
 SS_incidents_2019 <- SSDB_df %>%
-  filter(Date >= "2019-01-01" & Date <= "2019-12-31") %>%
-  length()
+  filter(Date >= "2019-01-01" & Date <= "2019-12-31")
   
-SS_casulties <- SSDB_Victim_df %>%
+  
+SS_casulties <- SSDB_casualty_df %>%
   filter(Date >= "2019-01-01" & Date <= "2019-12-31") %>%
-  summarise(Fatal = sum(Fatal), Wounded = sum(Wounded)) %>%
+  summarise(Fatal = sum(Fatal, na.rm = T), Wounded = sum(Wounded, na.rm = T)) %>%
   as.list()
 
 gun_type <- SSDB_df %>%
   distinct(weapontype) %>%
   drop_na() %>%
-  filter(weapontype == "Handgun" | weapontype == "Rifle" | weapontype == "Shotgun") %>%
-  as.list()
+  filter(weapontype == "Handgun" | weapontype == "Rifle" | weapontype == "Shotgun") 
 
-SS_description_2019 <- list(SS_incidents_2019, SS_casulties, gun_type)
+SS_unique_counties <- SS_incidents_2019 %>%
+  distinct(county_fips) %>%
+  nrow()
+
+SS_unique_cities <- SS_incidents_2019 %>%
+  distinct(location) %>%
+  nrow()
+  
+SS_description_2019 <- list(nrow(SS_incidents_2019), SS_casulties, gun_type, SS_unique_cities, SS_unique_counties)
   
 ## mean, max unemployment data 2019
 us_unemployment_2019 <- slice(Unemployment_df, 1) %>%
@@ -269,6 +279,10 @@ max_us_unemployment_2019 <- Unemployment_df %>%
             max_percent_of_state = max(Med_HH_Income_Percent_of_State_Total_2019,  na.rm = T))
 
 unemployment_description_2019 <- list(as.list(max_us_unemployment_2019), as.list(us_unemployment_2019))
+
+
+
+
 
 
   

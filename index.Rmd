@@ -8,6 +8,7 @@ output: html_document
 ```{r setup, include=FALSE}
 source("analysis.R")
 library(knitr)
+library(rstatix)
 ```
 
 # INFO 201 Course Project
@@ -16,13 +17,19 @@ library(knitr)
 
 Jeffrey Nguyen, Luka Marceta, Quang Nguyen, Liza Moore
 
-## Section 1 
+## Section 1
 
-### Problem Domain 
-Our proposal seeks to investigate the relationship between income and school shootings. Our group has defined a school shooting as "any time a gun goes off in an academic setting". The database we have selected is the only comprehensive list of all school shootings in America. The definition of a school shooting is abstract and the Center for Homeland Defense and Security acknowledges the limitations of their list, disclosing the ambiguity of a school shooting requires a compassionate mindset to take in myriad variables. Casting a "wide net" to catch as many incidents as possible. The phenomena recorded in each incident are diverse, including "Bullying," "Illegal Activity," "Indiscriminate/Targeted". Moreover, each incident has a reliability score that is found by assessing the credibility of the source
-The other data set we gathered as a proxy to the wealth of each school is a comprehensive list of the unemployment and median household income in a given state and county. The data set is from the US Department of Agriculture. This data set was gathered overtime from each specific region from 2000-2019, using census data as well as local data from authorities. Overall, it provides a comprehensive list that gives strong economic data by county.                                                      Although our group's intention is to merely summarize and consolidate wealth and school shooting incidents, we are interested in whether there are any differences in motivation, weapon, or legal ramifications. Understanding of economic and financial distress relative to school shooting and violence is important to understand the given report.                                                                        
-**Income inequality and mass shootings in the United States <https://bmcpublichealth.biomedcentral.com/articles/10.1186/s12889-019-7490-x>**     
-**Income Inequality, Household Income, and Mass Shooting in the United States <https://www.ncbi.nlm.nih.gov/pmc/articles/PMC6199901/>**                            
+### Problem Domain
+
+Our proposal seeks to investigate the relationship between regional wealth and the recorded number of school shootings. Our group has defined a school shooting as *"any time a gun goes off in an academic setting"*. The Center for Homeland Security has compiled the only comprehensive school shooting incident report in America. Popular press organizations as well as American think tanks commonly reference this dataset. However, we acknowledge that defining "school shooting" abstract and there are several social, political, and cultural facets that need to be taken into consideration when analyzing this data. Additionally, the creators of this dataset acknowledge the limitations of this list, disclosing that the ambiguity of a school shooting requires a compassionate mindset to take in myriad variables. Casting a "wide net" to catch as many incidents as possible. The phenomena recorded in each incident are diverse, including "Bullying," "Illegal Activity," "Indiscriminate/Targeted", "Gang Affiliation".
+
+Moreover, each incident has a reliability score that is found by assessing the credibility of the source The other data set we gathered as a proxy to the wealth of each school is a comprehensive list of the unemployment and median household income in a given state and county. The data set is from the US Department of Agriculture. This data set was gathered overtime from each specific region from 2000-2019, using census data as well as local data from authorities. Overall, it provides a comprehensive list that gives strong economic data by county. Although our group's intention is to merely summarize and consolidate wealth and school shooting incidents, we are interested in whether there are any differences in motivation, weapon, or legal ramifications. Understanding of economic and financial distress relative to school shooting and violence is important to understand the given report.
+
+[We have included the following articles in order to contextualize our exploratory report and the sensitive nature of the datum.]{.ul}
+
+#### [Income inequality and mass shootings in the United States](https://bmcpublichealth.biomedcentral.com/articles/10.1186/s12889-019-7490-x) [Income Inequality, Household ](https://www.ncbi.nlm.nih.gov/pmc/articles/PMC6199901/)
+
+#### [Income, and Mass Shooting in the United States](https://www.ncbi.nlm.nih.gov/pmc/articles/PMC6199901/)
 
 ## Section 2
 
@@ -30,11 +37,11 @@ The other data set we gathered as a proxy to the wealth of each school is a comp
 
 #### [K-12 School Shooting comprehensive list](https://www.chds.us/ssdb/data-map/)
 
--   Description of Data set
+-   [Description of Data set]{.ul}
 
     -   Providing information on school shooting from 1970 to 2020 from the school and the date to more strenuous information including narrative and summary.
 
--   How data was collected
+-   [How data was collected]{.ul}
 
     1.  Preliminary research and merging multiple data sources
 
@@ -46,7 +53,7 @@ The other data set we gathered as a proxy to the wealth of each school is a comp
 
     3.  Score reliability of data
 
-    -   Relaibility on information ranging from (1-5) weakest to strongest:
+    -   Reliability on information ranging from (1-5) weakest to strongest:
 
         1.  Blogs
         2.  Single newspaper articles or online news
@@ -56,11 +63,11 @@ The other data set we gathered as a proxy to the wealth of each school is a comp
 
 #### [Median household income and Unemployment for US, States, and Counties](https://www.ers.usda.gov/data-products/county-level-data-sets/download-data/)
 
--   Description of Data set
+-   [Description of Data set]{.ul}
 
     -   Information on the household income and unemployment in a given county, state, and nationally. Provided information from rate to actual numbers in those respected locations.
 
--   How data was collected
+-   [How data was collected]{.ul}
 
     -   Data was collected by the US Department of Agricultures Economic Research Service.
 
@@ -77,6 +84,7 @@ School_Shooting <- SSDB_Victim_df%>%
 
 kable(School_Shooting[1:5, ])
 ```
+
 This data sample shows the date of the school shooting and the school where the shooting occured. This data further goes into depth describing the situation of the shooting explaining whether or not the shoot was accidental or had motives. Finally it includes the outcome of the victims in the shooting from shots that had no impact on people to wounded shots that injured and finally fatal shots that killed.
 
 #### Unemployment/Median Household Income Data Sample
@@ -86,34 +94,109 @@ Unemployment_Income <- Unemployment_df%>%
   select(area_name, Unemployment_rate_2019, Median_Household_Income_2019, Med_HH_Income_Percent_of_State_Total_2019)
 kable(Unemployment_Income[1:5, ])
 ```
-This sample data set shows the economic situation of each area in the United States. It provides the location with the given county and state in the area_name. The unemployment rate is provided in each county in the United States as well as nationally. The median household income of each area is also provided in this data set. Finally, there is the median household income percentage as it relates to state. This information shows how much lower or higher that county's median household income is relative to their respectful state average median household income. 
+
+This sample data set shows the economic situation of each area in the United States. It provides the location with the given county and state in the area_name. The unemployment rate is provided in each county in the United States as well as nationally. The median household income of each area is also provided in this data set. Finally, there is the median household income percentage as it relates to state. This information shows how much lower or higher that county's median household income is relative to their respectful state average median household income.
 
 ## 2.2 Summary Statistics
+
+Although both the US Department of Agricultural Economic Research Unemployment data set and the K-12 School Shooting data set both span over several years, our data visualization and many of our question analysis revolves around 2019 due to the comprehensive analysis on wealth and income in the Unemployment data set. Here is the overview of the variables we have decided to highlight in our summary statistics.
+
+[School Shootings]{.ul}
+
+-   In 2019, there were:
+
+    -   `SS_description_2019[[1]]` school shootings
+
+-   resulting in:
+
+    -   `SS_description_2019[[2]][["Fatal"]]` fatalities
+
+    -   `SS_description_2019[[2]][["Wounded"]]` wounded
+
+-   The types of weapons used:
+
+    -   Handgun
+
+    -   Rifle
+
+    -   Shotgun
+
+-   The 2019 shootings took place in:
+
+    -   `SS_description_2019[[4]]` cities
+
+    -   `SS_description_2019[[4]]` counties
+
+### Unemployment Data
+
+-   In 2019, the national average unemployment rate:
+
+    -   `unemployment_description_2019[[2]][["Unemployment_rate_2019"]]`
+
+-   Kusilvak Census Area, AK had the highest average unemployment rate:
+
+    -   `unemployment_description_2019[[1]][["max_unemployment"]]`
+
+-   Loudoun County, VA had the highest median income:
+
+    -   `unemployment_description_2019[[1]][["max_household_income"]]`
+
+-   Los Alamos County, NM had the highest median income relative to median state income
+
+    -   `unemployment_description_2019[[1]][["max_percent_of_state"]]`
+
+-   The national median household income in 2019:
+
+    -   `unemployment_description_2019[[2]][["Median_Household_Income_2019"]]`
 
 ### Graphs
 
 ```{r}
 Shooting_Over_Time_plot
 ```
+
 This graph explains the number of school shootings from 1970 to 2020. The y-axis represents the number of shootings in occurrences and the x-axis represents the time in years.
 
 ```{r}
 Unemployment_Over_Time_plot
 ```
+
 This graph shows the unemployment rate from 2000 to 2019. The y-axis represents the unemployment rate by percentage, the x-axis represents time in years.
 
 ```{r}
 United_States_Unemployment_plot
 ```
 
-
 ```{r}
 Shootings_by_Location_plot
 ```
 
-### School Shootings
+### Outliers
 
-### Unemployment Data
+School Shooting Casualties: We found several extreme scores in the amount of casualties from school shooting incidents.
+
+```{r}
+library(rstatix)
+
+fatal_wounded <- SSDB_casualty_df %>%
+  mutate(Casualty = Fatal + Wounded) 
+outliers_casualty <- identify_outliers(fatal_wounded, Casualty) %>%
+  filter(is.extreme == TRUE) %>%
+  select(Date.x, School.x, Casualty) %>%
+  unique() %>%
+  slice() %>%
+```
+
+Unemployment: we found extreme outliers using the methodology in the package "statix"
+
+```{r echo=FALSE}
+library(rstatix)
+
+outliers_unemployment <- identify_outliers(Unemployment_df, Med_HH_Income_Percent_of_State_Total_2019) %>%
+  filter(is.extreme == TRUE) %>%
+  select(area_name) %>%
+  pull()
+```
 
 ## Section 3
 
