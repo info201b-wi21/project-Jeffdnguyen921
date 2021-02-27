@@ -38,7 +38,6 @@ SSDB_df <- SSDB_Raw_Data_df %>%
          Officer_Involved, Bullied, Domestic_Violence, Gang_Related, Shots_Fired,
          weapontype) %>% 
   unique()
-View(SSDB_df)
 
 #joining county_fips in school_schooting database using a complete USA
 SSDB_Victim_df <- left_join(SSDB_df, Casualties_df, by = "Incident_ID")
@@ -59,8 +58,7 @@ select(county_fips, area_name, Unemployment_rate_2000, Unemployment_rate_2001,
        Median_Household_Income_2019, Med_HH_Income_Percent_of_State_Total_2019)
 
 # Merge victim data with SSDB
-SSDB_casualty_df <- SSDB_df%>%
-  inner_join(SSDB_Victim_df, by = "Incident_ID") %>%
+SSDB_casualty_df <- SSDB_Victim_df%>%
   unique()
 
 # Income Areas
@@ -73,9 +71,9 @@ mid_income <- Unemployment_df%>%
 lower_income <- Unemployment_df%>%
   filter(Med_HH_Income_Percent_of_State_Total_2019 < 85)
 
+SSDB_Final_df <- left_join(SSDB_df, Casualties_df, by = "Incident_ID")
+
 ########################### SECTION 3 ##########################################
-View(Unemployment_df)
-View(SSDB_casualty_df)
 
 # Q1: Are rifles more prevalent in shootings in higher income areas?
   
@@ -90,13 +88,11 @@ SSDB_casualty_county_weapons_df <- SSDB_casualty_df %>%
 unemployment_county_income_df <- Unemployment_df %>% 
   select(county_fips, Med_HH_Income_Percent_of_State_Total_2019) %>% 
   drop_na()
-View(unemployment_county_income_df) #REMOVE
 
 # Need to combine SSDB county fips to Unemployment county fips
 county_weapon_income_df <- SSDB_casualty_county_weapons_df %>% 
   inner_join(unemployment_county_income_df, by = "county_fips") %>% 
   select(weapontype, Med_HH_Income_Percent_of_State_Total_2019)
-View(county_weapon_income_df)
 
 low_county_weapon_df <- county_weapon_income_df %>% 
   filter(Med_HH_Income_Percent_of_State_Total_2019 < 85) %>% 
@@ -121,7 +117,6 @@ low_mid_high_df <- c("low", "mid", "high")
 proportion_df <- c(low_county_weapon_df$proportion, mid_county_weapon_df$proportion, high_county_weapon_df$proportion)
 
 low_mid_high_rifle_rate_df <- data.frame(low_mid_high_df, proportion_df)
-View(low_mid_high_rifle_rate_df)
 
 income_level_rifle_rate_plot <- ggplot(data = low_mid_high_rifle_rate_df) +
   geom_col(aes(x = reorder(low_mid_high_df, -proportion_df),
@@ -139,9 +134,8 @@ income_level_rifle_rate_plot <- ggplot(data = low_mid_high_rifle_rate_df) +
   # For SSDB: county_fips, fatal, wounded, minor injuries, none
   # For unemployment: county_fips, med_HH_income % state total
 
-SSDB_county_casualties_df <- SSDB_casualty_df %>% 
+SSDB_county_casualties_df <- SSDB_Victim_df %>% 
   select(county_fips, `Minor Injuries`, Wounded, Fatal)
-View(SSDB_county_casualties_df)
 
 # Combine SSDB county casualties with unemployment county income
 county_casualties_income_df <- SSDB_county_casualties_df %>% 
@@ -202,13 +196,10 @@ School_level_schootings_plot <- ggplot(data = School_level_shootings) +
 
 SSDB_officer_df <- SSDB_casualty_df %>% 
   select(county_fips, Officer_Involved)
-View(SSDB_officer_df)
 
 SSDB_officer_involvement_income_df <- SSDB_officer_df %>% 
   inner_join(unemployment_county_income_df, by ="county_fips") %>% 
   select(Officer_Involved, Med_HH_Income_Percent_of_State_Total_2019)
-View(SSDB_officer_involvement_income_df)
-
 
 low_county_involvement_df <- SSDB_officer_involvement_income_df %>% 
   filter(Med_HH_Income_Percent_of_State_Total_2019 < 85) %>% 
@@ -244,7 +235,6 @@ police_involvement_income_level_plot <- ggplot(data = low_mid_high_inv_rate_df, 
        x = "Income Level") +
   scale_y_continuous(labels = scales::percent_format(scale = 1))
 
-print(police_involvement_income_level_plot)
 ## Creating The First Plot #############################################################################
 
 Shooting_Over_Time_DF <- SSDB_Final_df %>%
@@ -282,7 +272,12 @@ Unemployment_Over_Time_plot <-
   
 us_cities_county_state <- us_cities %>%
   mutate(county_state = tolower(paste(county_name, state_name, sep = ", "))) %>%
-  select(county_state, county_fips)
+  select(county_state, county_fips) %>%
+  add_row(county_state = "piscataquis, maine", county_fips = "23021") %>%
+  add_row(county_state = "st louis, minnesota", county_fips = "27137") %>%
+  add_row(county_state = "somerset, maine", county_fips = "23025") %>%
+  add_row(county_state = "st lawrence, new york", county_fips = "36089") %>%
+  add_row(county_state = "dona ana, new mexico", county_fips = "35013")
 
 United_States_Unemployment_df <- map_data("county") %>%
   mutate(county_state = paste(subregion, region, sep = ", "))
@@ -302,7 +297,7 @@ United_States_Unemployment_plot <-
        x = "",
        y = "",
        caption = "Displays the median household income of the county when compared to the state average. A number of
-       200% percent means that county is making double the median household income of the state.") +
+       200% means that county is making double the median household income of the state.") +
   theme(axis.ticks.x = element_blank(), axis.text.x = element_blank(),
         axis.ticks.y = element_blank(), axis.text.y = element_blank(),
         plot.background = element_rect(fill = "#f5f5f2", color = NA),
