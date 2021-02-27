@@ -4,6 +4,7 @@ library(ggplot2)
 library(readr)
 library(tidyverse)
 library(maps)
+library(rstatix)
 
 SSDB_Raw_Data_df <- read_csv("https://raw.githubusercontent.com/info201b-wi21/project-Jeffdnguyen921/main/data/SSDB_Raw_Data_Compiled.csv?token=ASLKMK4FWIIAM7YWLDYYV6DAH4CY2")
 
@@ -385,9 +386,18 @@ max_us_unemployment_2019 <- Unemployment_df %>%
 
 unemployment_description_2019 <- list(as.list(max_us_unemployment_2019), as.list(us_unemployment_2019))
 
+### Outliers
+fatal_wounded <- SSDB_casualty_df %>%
+  mutate(Casualty = Fatal + Wounded) 
+outliers_casualty <- identify_outliers(fatal_wounded, Casualty) %>%
+  filter(is.extreme == TRUE) %>%
+  select(Date, School, Casualty) %>%
+  unique() %>%
+  slice_max(order_by = Casualty, n = 5)
 
-
-
+outliers_unemployment <- identify_outliers(Unemployment_df, Med_HH_Income_Percent_of_State_Total_2019) %>%
+  filter(is.extreme == TRUE) %>%
+  select(area_name, Med_HH_Income_Percent_of_State_Total_2019) 
 
 
   

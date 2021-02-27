@@ -8,7 +8,6 @@ output: html_document
 ```{r setup, include=FALSE}
 source("analysis.R")
 library(knitr)
-library(rstatix)
 ```
 
 # INFO 201 Course Project
@@ -85,7 +84,11 @@ School_Shooting <- SSDB_Victim_df%>%
 kable(School_Shooting[1:5, ])
 ```
 
-This data sample shows the date of the school shooting and the school where the shooting occured. This data further goes into depth describing the situation of the shooting explaining whether or not the shoot was accidental or had motives. Finally it includes the outcome of the victims in the shooting from shots that had no impact on people to wounded shots that injured and finally fatal shots that killed.
+This data sample shows the date of the school shooting and the school where the shooting occured. This data further goes into depth describing the situation of the shooting explaining whether or not the shoot was accidental or had motives. Finally it includes the outcome of the victims in the shooting from shots that had no impact on people to wounded shots that injured and finally fatal shots that killed. 
+
+*Data Wrangling*
+
+First, we edited the casualties data to show the number of wounded, fatal, none, and minor injuries for each shooting and joined it with the SSDB data. Following that we used US city data that contains county_fips, lat, lng, and location. Joining that together with the SSDB, to give us accurate data with locations. Following that merged the data with Unemployment.
 
 #### Unemployment/Median Household Income Data Sample
 
@@ -96,6 +99,10 @@ kable(Unemployment_Income[1:5, ])
 ```
 
 This sample data set shows the economic situation of each area in the United States. It provides the location with the given county and state in the area_name. The unemployment rate is provided in each county in the United States as well as nationally. The median household income of each area is also provided in this data set. Finally, there is the median household income percentage as it relates to state. This information shows how much lower or higher that county's median household income is relative to their respectful state average median household income.
+
+*Data Wrangling*
+
+First, we selected unemployment data throughout the years and included the median household income and percentage. Following that we also included data on low, medium, and high income areas separating it out by relative percentage with 85% and lower being lower income and 85% to 115% being medium income and 115% and higher being high income areas. Following that merged data with SSDB data.
 
 ## 2.2 Summary Statistics
 
@@ -173,39 +180,76 @@ Shootings_by_Location_plot
 
 ### Outliers
 
-School Shooting Casualties: We found several extreme scores in the amount of casualties from school shooting incidents.
+#### School Shooting Casualties: We found several extreme scores in the amount of casualties from school shooting incidents.
 
 ```{r}
-library(rstatix)
-
-fatal_wounded <- SSDB_casualty_df %>%
-  mutate(Casualty = Fatal + Wounded) 
-outliers_casualty <- identify_outliers(fatal_wounded, Casualty) %>%
-  filter(is.extreme == TRUE) %>%
-  select(Date.x, School.x, Casualty) %>%
-  unique() %>%
-  slice() %>%
+kable(outliers_casualty)
 ```
+Overall there are a couple of outliers in the Casualties that stem from mass shooting. These outliers signify many of the mass shootings at schools in recent years and are some of the most newsworthy stories of the last 50 years. Casualties = Fatal injuries + Wounded injuries.
 
-Unemployment: we found extreme outliers using the methodology in the package "statix"
+#### Unemployment: we found extreme outliers using the methodology in the package "statix"
 
 ```{r echo=FALSE}
-library(rstatix)
-
-outliers_unemployment <- identify_outliers(Unemployment_df, Med_HH_Income_Percent_of_State_Total_2019) %>%
-  filter(is.extreme == TRUE) %>%
-  select(area_name) %>%
-  pull()
+kable(outliers_unemployment)
 ```
+Overall, all signify some of the richest counties relative to their respective states with many above the 180% threshold. Many of the outliers are also a byproduct of the poor states that they are apart off. 
 
 ## Section 3
 
 ### Analysis Questions
 
-*Liza:* - Do high income areas have higher or lower rates of shootings? - This question brings forth the differences in rates relative to the background of students in a given area. - Of high income areas, what are the occurrences of shootings at the different levels of schools? - This question helps look into where the concentration of shootings are and where our focus might be in the future.
+#### 1. Are rifles more prevalent in shootings in higher income areas?
+```{r}
+income_level_rifle_rate_plot
+```
+##### Introduction: 
+We took each occurrence of a rifle or multiple rifle school shooting and paired it with the median household income percentage for the occurrence’s county fips. 
 
-*Luka:* - Are automatic weapons more prevalent in shootings in higher income areas? - This question help understanding the widespread automatic weapons issue relative to income. - Is law enforcement more likely to apprehend the shooter in higher income areas? - This question helps answer the impact that law enforcement might have on higher income areas that have more funding for police departments.
+##### Method: 
+We had to trim the data set to the specific columns needed. From the School Shooting database we needed: county_fips, and weapontype. From the unemployment data I selected: county_fips, Med_HH_Income_Percent_of_State_Total_2019. Then we combined the datasets  for easier wrangling. Because “higher income” does not have a specific definition, we defined “low, medium, and high income”. 
+ 
+The counties with low income had an average household income that was 15% below that state average (85%). The counties with middle income had an average income between 85% to 115% of state’s income. The counties with the highest income had average household incomes 115% of the state’s average income
 
-*Quang:* - Does income dictate the result of a school shooting? (casualties / shooter livelihood) - This question helps understanding of inequalities that different classes face when experiencing the same situation. - Does income affect the number of casualties in a mass shooting? - This question also addresses how an individual class might dictate the outcome of a school shooting.
+##### Results: 
+Rifles were used 2.5 more in low-income areas than high-income areas. So the answer to our question is no, rifle usage was not more prevalent in high-income areas, the opposite was found to be true.
 
-*Jeffrey:* - How does the deaths during a shootings in low income areas differ to the rate of shootings in high income areas? - This is a comparison question that address deaths as a form to look into how class involves the survival of students. - How does mass shootings in low income areas differ in comparison to high income areas? - This question looks at mass shootings in an attempt to understand the prevalence between classes.
+#### 2. Does income affect the number of casualties in a mass shooting?
+```{r}
+casualties_income_level_plot
+```
+##### Introduction:
+Income is defined as household income for 2019 and casualties is defined as injuries and fatalities sustained during the school shooting. 
+
+##### Method:
+We took the casualties for each school shooting and paired them with the median household income percentage for the shooting’s county fip. We trimmed each data set. For SSDB: county_fips, fatal, wounded, minor injuries, none. And For unemployment: county_fips, med_HH_income % state total
+
+##### Results: 
+There was no statistically significant difference between income and casualties in mass shootings as shown with the flat trend line. 
+
+3. Of high income areas, what are the occurrences of shootings at the different levels of schools?
+```{r}
+School_level_schootings_plot
+```
+##### Introduction:
+Finding the school level of each school is already provided on the SSDB. Therefore using that information to find the shooting data relative to income level. 
+
+##### Method:
+First we found Higher Income Areaswhere the average income is  >100% of state income. Then found the amount of shootings by each group. Moreover, we found the high median household income percentage baseline by filtering for incomes over 100%, then found the school level for each shooting and paired the two together by county fips. 
+
+##### Results: 
+High schools unsurprisingly had the highest proportion of school shootings. Almost tripling the amount of recorded incidents as elementary school incidents. Interestingly, of high income areas, middle schools had lower rates of school shootings than elementary schools.
+
+
+4. Does income influence whether or not officers are involved in a school shooting?
+```{r}
+police_involvement_income_level_plot
+```
+##### Introduction:
+The officers information is given in the SSDB. Using the income data to find school relative to income to find answer.
+
+##### Method:
+After defining low, middle, and high income areas, we found the police involvement rate by income bracket. The lollipop chart represents what percentage of shootings officers were present at. 
+
+##### Results:
+The most surprising aspect of the analysis was found that majority of the times, officers were not involved in the shooting incident. Although income is not independent from the rate of police involvement, there is no substantial difference between the income areas. 
+
