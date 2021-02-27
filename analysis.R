@@ -36,7 +36,9 @@ SSDB_df <- SSDB_Raw_Data_df %>%
   rename(campus_location = Location)%>%
   select(Incident_ID, county_fips, Date, School, School_Level, campus_location, location, Situation, Targets, Accomplice,
          Officer_Involved, Bullied, Domestic_Violence, Gang_Related, Shots_Fired,
-         weapontype)
+         weapontype) %>% 
+  unique()
+View(SSDB_df)
 
 #joining county_fips in school_schooting database using a complete USA
 SSDB_Victim_df <- left_join(SSDB_df, Casualties_df, by = "Incident_ID")
@@ -60,7 +62,6 @@ select(county_fips, area_name, Unemployment_rate_2000, Unemployment_rate_2001,
 SSDB_casualty_df <- SSDB_df%>%
   inner_join(SSDB_Victim_df, by = "Incident_ID") %>%
   unique()
-  
 
 # Income Areas
 high_income <- Unemployment_df%>%
@@ -82,11 +83,9 @@ View(SSDB_casualty_df)
     # For SSDB: county_fips, weapontype
       # need to remove rows that are not rifle or multiple rifle
     # For unemployment: county_fips, MED_HH_INCOME % state total
-SSDB_casualty_county_rifle_df <- SSDB_casualty_df %>% 
-  select(county_fips, weapontype) %>% 
-  group_by(weapontype) %>% #is this necessary?
-  filter(weapontype == "Rifle" | weapontype == "Multiple Rifles")
-View(SSDB_casualty_county_rifle_df) #REMOVE
+SSDB_casualty_county_weapons_df <- SSDB_casualty_df %>% 
+  select(county_fips, weapontype)  #is this necessary?
+  #filter(weapontype == "Rifle" | weapontype == "Multiple Rifles")
 
 unemployment_county_income_df <- Unemployment_df %>% 
   select(county_fips, Med_HH_Income_Percent_of_State_Total_2019) %>% 
@@ -94,9 +93,45 @@ unemployment_county_income_df <- Unemployment_df %>%
 View(unemployment_county_income_df) #REMOVE
 
 # Need to combine SSDB county fips to Unemployment county fips
-county_rifle_income_df <- SSDB_casualty_county_rifle_df %>% 
-  inner_join(unemployment_county_income_df, by = "county_fips")
-View(county_rifle_income_df)
+county_weapon_income_df <- SSDB_casualty_county_weapons_df %>% 
+  inner_join(unemployment_county_income_df, by = "county_fips") %>% 
+  select(weapontype, Med_HH_Income_Percent_of_State_Total_2019)
+View(county_weapon_income_df)
+
+low_county_weapon_df <- county_weapon_income_df %>% 
+  filter(Med_HH_Income_Percent_of_State_Total_2019 < 85) %>% 
+  mutate(is_rifle = weapontype == "Rifle" | weapontype == "Multiple Rifles") %>% 
+  summarise(total = n(), rifles = sum(is_rifle, na.rm = TRUE), proportion = (rifles / total) * 100)%>% 
+  select(proportion)
+
+mid_county_weapon_df <- county_weapon_income_df %>% 
+  filter(Med_HH_Income_Percent_of_State_Total_2019 >= 85, Med_HH_Income_Percent_of_State_Total_2019 <= 115) %>% 
+  mutate(is_rifle = weapontype == "Rifle" | weapontype == "Multiple Rifles") %>% 
+  summarise(total = n(), rifles = sum(is_rifle, na.rm = TRUE), proportion = (rifles / total) * 100)%>% 
+  select(proportion)
+
+high_county_weapon_df <- county_weapon_income_df %>% 
+  filter(Med_HH_Income_Percent_of_State_Total_2019 > 115) %>% 
+  mutate(is_rifle = weapontype == "Rifle" | weapontype == "Multiple Rifles") %>% 
+  summarise(total = n(), rifles = sum(is_rifle, na.rm = TRUE), proportion = (rifles / total) * 100)%>% 
+  select(proportion)
+
+low_mid_high_df <- c("low", "mid", "high")
+
+proportion_df <- c(low_county_weapon_df$proportion, mid_county_weapon_df$proportion, high_county_weapon_df$proportion)
+
+low_mid_high_rifle_rate_df <- data.frame(low_mid_high_df, proportion_df)
+View(low_mid_high_rifle_rate_df)
+
+income_level_rifle_rate_plot <- ggplot(data = low_mid_high_rifle_rate_df) +
+  geom_col(aes(x = reorder(low_mid_high_df, -proportion_df),
+               y = proportion_df)) +
+  labs(title = "Rifle Usage Across Income Levels",
+       x = "Income Level",
+       y = "Rifle Usage"
+       ) +
+  scale_y_continuous(labels = scales::percent_format(scale = 1))
+
 
 # Q2: Does income affect the number of casualties in a mass shooting?
 
@@ -105,13 +140,25 @@ View(county_rifle_income_df)
   # For unemployment: county_fips, med_HH_income % state total
 
 SSDB_county_casualties_df <- SSDB_casualty_df %>% 
-  select(county_fips, None, `Minor Injuries`, Wounded, Fatal)
+  select(county_fips, `Minor Injuries`, Wounded, Fatal)
 View(SSDB_county_casualties_df)
 
 # Combine SSDB county casualties with unemployment county income
 county_casualties_income_df <- SSDB_county_casualties_df %>% 
-  inner_join(unemployment_county_income_df, by ="county_fips")
-View(county_casualties_income_df)
+  inner_join(unemployment_county_income_df, by ="county_fips") %>% 
+  drop_na() %>% 
+  mutate(casualties = `Minor Injuries` + Wounded + Fatal) %>% 
+  select(Med_HH_Income_Percent_of_State_Total_2019, casualties)
+
+casualties_income_level_plot <- ggplot(data = county_casualties_income_df) +
+  geom_point(aes(x = Med_HH_Income_Percent_of_State_Total_2019,
+                y = casualties), size = 0.5) +
+  geom_smooth(aes(x = Med_HH_Income_Percent_of_State_Total_2019,
+                  y = casualties), method = lm, se = FALSE, color = "Red") +
+  labs(title = "Amount of Casualties Over Income Level in Shootings",
+       x = "Income Level",
+       y = "Casualties") +
+  scale_x_continuous(labels = scales::percent_format(scale = 1))
 
 # Q3: Of high income areas, what are the occurrences of shootings at the different levels of schools?
 
@@ -131,10 +178,73 @@ High_income_area <- SSDB_Unemployment_df%>%
 School_level_shootings <- High_income_area%>%
   mutate(School_Level = ifelse(School_Level %in% "", "None", School_Level)) %>% 
   #https://stackoverflow.com/questions/47562321/split-one-variable-into-multiple-variables-in-r
-  mutate(Shootings = 1) %>%
-  pivot_wider(names_from = School_Level, values_from = Shootings, values_fn = sum, values_fill = 0)
+  mutate(Shootings = 1) %>% 
+  group_by(School_Level) %>% 
+  summarise(Shootings = n()) %>% 
+  filter(School_Level != "Other",
+         School_Level != "6-12",
+         School_Level != "K-12",
+         School_Level != "K-8",
+         School_Level != "Junior High") 
   
-  
+School_level_shootings$School_Level <- factor(School_level_shootings$School_Level,
+                                              levels = c("Elementary",
+                                                         "Middle",
+                                                         "High"))
+
+School_level_schootings_plot <- ggplot(data = School_level_shootings) + 
+  geom_col(aes(x = School_Level,
+               y = Shootings
+               )) +
+  labs(title = "Shootings Across School Levels")
+
+#Q4 Does income influence whether or not officers are involved in a school shooting?
+
+SSDB_officer_df <- SSDB_casualty_df %>% 
+  select(county_fips, Officer_Involved)
+View(SSDB_officer_df)
+
+SSDB_officer_involvement_income_df <- SSDB_officer_df %>% 
+  inner_join(unemployment_county_income_df, by ="county_fips") %>% 
+  select(Officer_Involved, Med_HH_Income_Percent_of_State_Total_2019)
+View(SSDB_officer_involvement_income_df)
+
+
+low_county_involvement_df <- SSDB_officer_involvement_income_df %>% 
+  filter(Med_HH_Income_Percent_of_State_Total_2019 < 85) %>% 
+  mutate(is_involved = Officer_Involved == "Yes") %>% 
+  summarise(total = n(), Involved = sum(is_involved, na.rm = TRUE), proportion = (Involved / total) * 100)%>% 
+  select(proportion)
+
+middle_county_involvement_df <- SSDB_officer_involvement_income_df %>% 
+  filter(Med_HH_Income_Percent_of_State_Total_2019 >= 85, Med_HH_Income_Percent_of_State_Total_2019 <= 115) %>% 
+  mutate(is_involved = Officer_Involved == "Yes") %>% 
+  summarise(total = n(), Involved = sum(is_involved, na.rm = TRUE), proportion = (Involved / total) * 100)%>% 
+  select(proportion)
+
+high_county_involvement_df <- SSDB_officer_involvement_income_df %>% 
+  filter(Med_HH_Income_Percent_of_State_Total_2019 > 115) %>% 
+  mutate(is_involved = Officer_Involved == "Yes") %>% 
+  summarise(total = n(), Involved = sum(is_involved, na.rm = TRUE), proportion = (Involved / total) * 100)%>% 
+  select(proportion)
+
+proportion_inv_df <- c(low_county_involvement_df$proportion, middle_county_involvement_df$proportion, high_county_involvement_df$proportion)
+
+low_mid_high_inv_rate_df <- data.frame(low_mid_high_df, proportion_inv_df)
+
+police_involvement_income_level_plot <- ggplot(data = low_mid_high_inv_rate_df, aes(x = low_mid_high_df,
+                                                   y = proportion_inv_df)) +
+  geom_segment(aes(xend = low_mid_high_df, yend = 0)) +
+  geom_point(size = 4, color = "orange") +
+  theme_bw() +
+  xlab("") +
+  coord_flip() +
+  labs(title = "Police Involvement In School Shootings Across Income",
+       y = "% Police Involvement",
+       x = "Income Level") +
+  scale_y_continuous(labels = scales::percent_format(scale = 1))
+
+print(police_involvement_income_level_plot)
 ## Creating The First Plot #############################################################################
 
 Shooting_Over_Time_DF <- SSDB_Final_df %>%
