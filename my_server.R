@@ -55,7 +55,7 @@ SSDB_Final_df <- SSDB_Final_df %>%
 SSDB_Final_df <- SSDB_Final_df[!duplicated(SSDB_Final_df[,c("Date", "School")]),]
 
 ####################################################################################################
-
+####### Map Data ##########
 us_cities_county_state <- us_cities %>%
   mutate(county_state = tolower(paste(county_name, state_name, sep = ", "))) %>%
   select(county_state, county_fips) %>%
@@ -75,8 +75,6 @@ Unemployment_fips <- Unemployment_df %>%
 
 United_States_Unemployment_df <- left_join(United_States_Unemployment_df, Unemployment_fips, by = "county_fips")
 
-###########################################################################################
-
 United_States_Shape <- map_data("state")
 
 Shootings_by_County_fips <- SSDB_Final_df %>%
@@ -92,6 +90,28 @@ Shootings_by_County_fips[c("Casualties")][is.na(Shootings_by_County_fips[c("Casu
 
 Shootings_by_County_fips <- Shootings_by_County_fips %>%
   mutate(info = paste("Date: ", Date, "\nLocation: ", location, "\nSchool: ", School, "\nCasualties: ", Casualties, sep = ""))
+
+####################################################################################################
+############ Numerical Analysis #############################
+
+Shootings_Unemployment_Analysis <- left_join(SSDB_Final_df, Unemployment_df, by = "county_fips")
+
+Shootings_Unemployment_Analysis <- Shootings_Unemployment_Analysis %>%
+  select(Casualties, Med_HH_Income_Percent_of_State_Total_2019) %>%
+  mutate_all(~replace(., is.na(.), 0)) 
+
+High_Income_Casualties <- Shootings_Unemployment_Analysis %>%
+  filter(Med_HH_Income_Percent_of_State_Total_2019 >= 93.05) %>%
+  summarise(average_casualties = mean(Casualties))
+
+Mid_Income_Casualties <- Shootings_Unemployment_Analysis %>%
+  filter(Med_HH_Income_Percent_of_State_Total_2019 >= 81.65) %>%
+  filter(Med_HH_Income_Percent_of_State_Total_2019 <= 93.05) %>%
+  summarise(average_casualties = mean(Casualties))
+
+Low_Income_Casualties <- Shootings_Unemployment_Analysis %>%
+  filter(Med_HH_Income_Percent_of_State_Total_2019 <= 81.65) %>%
+  summarise(average_casualties = mean(Casualties))
 
 ####################################################################################################
 
@@ -141,6 +161,15 @@ my_server <- function(input, output) {
     United_States_Unemployment_plot <- ggplotly(United_States_Unemployment_plot, tootltip = "info")
     
     return (United_States_Unemployment_plot)
+  })
+  
+  output$text2 <- renderText ({
+    return (paste("Based on the summary statistics of the data, there appears to be no correlation between
+                  income and casualties in school shootings. <br>This is displayed by the fact that in low
+                  income areas, the average casualties per shooting is <i>", Low_Income_Casualties$average_casualties,
+                  "</i>. <br>The average for middle income areas is <i>", Mid_Income_Casualties$average_casualties,"</i>.<br> The average
+                  casualties for high income areas is <i>", High_Income_Casualties$average_casualties, "</i>. <br>As shown, there
+                  appears to be no correlation between income and casualties."))
   })
 }
 

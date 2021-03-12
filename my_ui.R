@@ -72,12 +72,13 @@ Question2DemoTab <- tabItem(
       mainPanel(
         tabsetPanel(type = "tabs",
                     tabPanel("Plot", shinycssloaders::withSpinner(plotlyOutput("question2", height = "600px", width = "800px"))),
-                    tabPanel("Details", h4("This map shows plots the income of the general counties against the school 
+                    tabPanel("How To Read", h4("This map shows plots the income of the general counties against the school 
                     shootings that have occured there. A darker map color represents a county with
                     a higher average income. The lighter a county the lower the average income. The
                     shootings are interactive displaying details with just a hover. Additionally
                     the bigger the green circle representing each shooting, the more casualties the
-                    shooting had."))
+                    shooting had.")),
+                    tabPanel("Details", shinycssloaders::withSpinner(htmlOutput("text2")))
         )
       )
     )

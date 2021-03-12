@@ -1,5 +1,4 @@
 library(shiny)
-library(profvis)
 
 source("my_ui.R")
 source("my_server.R")
