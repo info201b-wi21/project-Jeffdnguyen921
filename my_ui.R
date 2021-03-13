@@ -79,12 +79,13 @@ Question2DemoTab <- tabItem(
         textInput(inputId = "state2", label = "What state would you like to view? (Default is all)"),
         sliderInput("years2", label = h3("What years would you like to view?"), min = 1970, 
                     max = 2021, value = c(1980, 2000)),
-        checkboxInput("incomeGradient", label = "Income Gradient", value = TRUE)
+        checkboxInput("incomeGradient", label = "Income Gradient", value = TRUE),
+        p(htmlOutput("text2"))
       ),
       mainPanel(
         tabsetPanel(type = "tabs",
                     tabPanel("Plot", shinycssloaders::withSpinner(plotlyOutput("question2", height = "600px", width = "800px"))),
-                    tabPanel("Details", h4("This map shows plots the income of the general counties against the school 
+                    tabPanel("How to Read", h4("This map shows plots the income of the general counties against the school 
                     shootings that have occured there. A darker map color represents a county with
                     a higher average income. The lighter a county the lower the average income. The
                     shootings are interactive displaying details with just a hover. Additionally
@@ -113,7 +114,7 @@ Question3 <- tabItem(
                              titlePanel(
                                strong("Occurrence for each school level")),
                                p("Slide for income brackets, insert dates to analyze, check the school levels to analyze"),
-                             plotOutput("Question3"), 
+                             shinycssloaders::withSpinner(plotOutput("Question3")), 
                              textOutput("desc3"))
                          
         )
@@ -134,12 +135,12 @@ Question1_Liza <- tabItem(
       ),
       mainPanel(
         tabsetPanel(type = "tabs",
-                    tabPanel("Weapon", plotOutput("plot"),
+                    tabPanel("Weapon", shinycssloaders::withSpinner(plotOutput("plot")),
                     p(em("Data is pulled from school shootings since 1970. We found that weapon used is different in each income level. Handguns were the most common weapon used. However,
                     counties with higher income areas were more 12% more likely to use a handgun than a shooter in a lower income area. 
                     In lower income areas, shotguns and rifles were more commonly used than middle or high income areas at 3.9% and 11% 
                     respectively.")),
-                    plotOutput("plot2"),
+                    shinycssloaders::withSpinner(plotOutput("plot2")),
                     p(em("Police forget to record the schooter's weapontype nearly 20% of the time. the difference between missing shooter records between the
                     income levels was not significant")),
                     textOutput("desc1")))
@@ -163,7 +164,7 @@ Question4 <- tabItem(
                     tabPanel("Police Involvement by Income", 
                              titlePanel(
                                strong("Percentage of Police Involvement in School Shootings Across Income Levels")),
-                             plotOutput("Question4"), textOutput("plotdescription"))
+                             shinycssloaders::withSpinner(plotOutput("Question4")), textOutput("plotdescription"))
         )
       )
     )

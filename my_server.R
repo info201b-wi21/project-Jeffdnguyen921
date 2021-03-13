@@ -277,6 +277,30 @@ school_levels <- c("All",
 
 impact_levels <- c("Occurrences", "Deaths", "Injured")
 
+####################################################################################################
+############ Numerical Analysis #############################
+
+Shootings_Unemployment_Analysis <- left_join(SSDB_Final_df, Unemployment_df, by = "county_fips")
+
+Shootings_Unemployment_Analysis <- Shootings_Unemployment_Analysis %>%
+  select(Casualties, Med_HH_Income_Percent_of_State_Total_2019) %>%
+  mutate_all(~replace(., is.na(.), 0)) 
+
+High_Income_Casualties <- Shootings_Unemployment_Analysis %>%
+  filter(Med_HH_Income_Percent_of_State_Total_2019 >= 93.05) %>%
+  summarise(average_casualties = mean(Casualties))
+
+Mid_Income_Casualties <- Shootings_Unemployment_Analysis %>%
+  filter(Med_HH_Income_Percent_of_State_Total_2019 >= 81.65) %>%
+  filter(Med_HH_Income_Percent_of_State_Total_2019 <= 93.05) %>%
+  summarise(average_casualties = mean(Casualties))
+
+Low_Income_Casualties <- Shootings_Unemployment_Analysis %>%
+  filter(Med_HH_Income_Percent_of_State_Total_2019 <= 81.65) %>%
+  summarise(average_casualties = mean(Casualties))
+
+####################################################################################################
+
 my_server <- function(input, output) {
   
   output$question2 <- renderPlotly ({
@@ -388,32 +412,40 @@ my_server <- function(input, output) {
     paste("A graphical representation of income level and the proportion of", input$weapon, "use nationwide")
   })
   
-output$Question4 <- renderPlot({
-  police_involvement_plot <- SSDB_officer_involvement_income_df %>% 
-    mutate(Shootings = 1) %>%
-    rename(income_percent = Med_HH_Income_Percent_of_State_Total_2019)%>%
-    filter(Officer_Involved == input$Police)%>%
-    group_by(Officer_Involved, income_percent)%>%
-    summarise(Shootings = n())
-  
-  p <- ggplot(police_involvement_plot) +
-    geom_point(aes(x = income_percent, y = Shootings), color = "Blue") +
+  output$Question4 <- renderPlot({
+    police_involvement_plot <- SSDB_officer_involvement_income_df %>% 
+      mutate(Shootings = 1) %>%
+      rename(income_percent = Med_HH_Income_Percent_of_State_Total_2019)%>%
+      filter(Officer_Involved == input$Police)%>%
+      group_by(Officer_Involved, income_percent)%>%
+      summarise(Shootings = n())
     
-    labs(
-      y = "% Police Involved / Not Involved",
-      x = "Income Level")  +
-    scale_x_continuous(limits = input$Income) +
-    scale_y_continuous(labels = scales::percent_format(scale = 1))
-  p
-})
-
-output$plotdescription <- renderText({
-  paste("A graphical representation of police involvement across income levels ", input$Income[1], " and ",input$Income[2], ". 
-        Users can select whether they'd like to see the percentage of police involvement at each income level, or 
-        the percent which police where not involved at each level. According to the data, the middle income bracket 
-        had the highest percentage of police involvement at an average 2.65%, followed by the 
-        high income bracket at 1.72%, which was in turn followed by the low income bracket at 1.66% average involvement.", sep = "")
-})
+    p <- ggplot(police_involvement_plot) +
+      geom_point(aes(x = income_percent, y = Shootings), color = "Blue") +
+      
+      labs(
+        y = "% Police Involved / Not Involved",
+        x = "Income Level")  +
+      scale_x_continuous(limits = input$Income) +
+      scale_y_continuous(labels = scales::percent_format(scale = 1))
+    p
+  })
   
+  output$plotdescription <- renderText({
+    paste("A graphical representation of police involvement across income levels ", input$Income[1], " and ",input$Income[2], ". 
+          Users can select whether they'd like to see the percentage of police involvement at each income level, or 
+          the percent which police where not involved at each level. According to the data, the middle income bracket 
+          had the highest percentage of police involvement at an average 2.65%, followed by the 
+          high income bracket at 1.72%, which was in turn followed by the low income bracket at 1.66% average involvement.", sep = "")
+  })
+  
+  output$text2 <- renderText ({
+    return (paste("Based on the summary statistics of the data, there appears to be no correlation between
+                    income and casualties in school shootings. <br>This is displayed by the fact that in low
+                    income areas, the average casualties per shooting is <i>", Low_Income_Casualties$average_casualties,
+                  "</i>. <br>The average for middle income areas is <i>", Mid_Income_Casualties$average_casualties,"</i>.<br> The average
+                    casualties for high income areas is <i>", High_Income_Casualties$average_casualties, "</i>. <br>As shown, there
+                    appears to be no correlation between income and casualties."))
+  })
 }
 
