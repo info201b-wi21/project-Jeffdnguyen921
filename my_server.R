@@ -203,7 +203,48 @@ q1_weapontype_rate <- data.frame(q1_class, q1_proportion_rifle, q1_proportion_ha
   rename(Rifle = q1_proportion_rifle, Handgun = q1_proportion_handgun, Shotgun = q1_proportion_shotgun)
 q1_weapontype_rate$q1_class <- factor(q1_weapontype_rate$q1_class, levels = c("Low", "Med", "High"))
 
-#########################################################################################################################
+######################################### Q4 WRANGLING ######################################################
+
+us_city_state_city <- us_cities %>%
+  unite("location", city, state_id, sep = ", ") %>% 
+  select(location, county_fips, lat, lng)
+
+SSDB_df <- SSDB_Raw_Data_df %>%
+  unite("location", City, State, sep = ", ") %>%
+  inner_join(us_city_state_city, by = "location")%>%
+  rename(campus_location = Location)%>%
+  select(Incident_ID, county_fips, Date, School, School_Level, campus_location, location, Situation, Targets, Accomplice,
+         Officer_Involved, Bullied, Domestic_Violence, Gang_Related, Shots_Fired,
+         weapontype) %>% 
+  unique()
+
+Casualties_df <- Victim_df %>%
+  select(incidentid, injury) %>%
+  rename(Incident_ID = incidentid) %>%
+  rename(Victim_outcome = injury )%>%
+  mutate(Victim_outcome = ifelse(Victim_outcome %in% "", "None", Victim_outcome)) %>% 
+  #https://stackoverflow.com/questions/47562321/split-one-variable-into-multiple-variables-in-r
+  mutate(people = 1) %>%
+  pivot_wider(names_from = Victim_outcome, values_from = people, values_fn = sum, values_fill = 0)
+
+SSDB_Victim_df <- left_join(SSDB_df, Casualties_df, by = "Incident_ID")
+
+SSDB_casualty_df <- SSDB_Victim_df%>%
+  unique()
+
+SSDB_officer_df <- SSDB_casualty_df %>% 
+  select(county_fips, Officer_Involved)
+
+unemployment_county_income_df <- Unemployment_df %>% 
+  select(county_fips, Med_HH_Income_Percent_of_State_Total_2019) %>% 
+  drop_na()
+
+SSDB_officer_involvement_income_df <- SSDB_officer_df %>% 
+  inner_join(unemployment_county_income_df, by ="county_fips") %>% 
+  select(Officer_Involved, Med_HH_Income_Percent_of_State_Total_2019)
+
+officer_present <- c("Yes", "No")
+#############################################################################################################
 
 my_server <- function(input, output) {
   
@@ -252,6 +293,7 @@ my_server <- function(input, output) {
     
     return (United_States_Unemployment_plot)
   })
+  
   output$plot <- renderPlot({
     plot <- ggplot(data=q1_weapontype_rate, mapping = aes_string(x = "q1_class", y = input$weapon, fill = "q1_class")) +
       geom_col() +
@@ -260,6 +302,7 @@ my_server <- function(input, output) {
       scale_y_continuous(labels = scales::percent_format(scale = 1))
     return(plot)
   })
+  
   output$plot2 <- renderPlot({
     plot2 <- ggplot(q1_proportion_unknown, aes(x=" ", y=value, fill=group))+
       geom_bar(width = 1, stat = "identity", color = "white") +
@@ -270,8 +313,37 @@ my_server <- function(input, output) {
       scale_fill_manual(values=c("#d8b365", "#f5f5f5"))
     return(plot2)
   })
+  
   output$desc1 <- renderText({
     paste("A graphical representation of income level and the proportion of", input$weapon, "use nationwide")
   })
+  
+output$Question4 <- renderPlot({
+  police_involvement_plot <- SSDB_officer_involvement_income_df %>% 
+    mutate(Shootings = 1) %>%
+    rename(income_percent = Med_HH_Income_Percent_of_State_Total_2019)%>%
+    filter(Officer_Involved == input$Police)%>%
+    group_by(Officer_Involved, income_percent)%>%
+    summarise(Shootings = n())
+  
+  p <- ggplot(police_involvement_plot) +
+    geom_point(aes(x = income_percent, y = Shootings), color = "Blue") +
+    
+    labs(
+      y = "% Police Involved / Not Involved",
+      x = "Income Level")  +
+    scale_x_continuous(limits = input$Income) +
+    scale_y_continuous(labels = scales::percent_format(scale = 1))
+  p
+})
+
+output$plotdescription <- renderText({
+  paste("A graphical representation of police involvement across income levels ", input$Income[1], " and ",input$Income[2], ". 
+        Users can select whether they'd like to see the percentage of police involvement at each income level, or 
+        the percent which police where not involved at each level. According to the data, the middle income bracket 
+        had the highest percentage of police involvement at an average 2.65%, followed by the 
+        high income bracket at 1.72%, which was in turn followed by the low income bracket at 1.66% average involvement.", sep = "")
+})
+  
 }
 

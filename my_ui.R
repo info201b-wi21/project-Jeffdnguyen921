@@ -122,11 +122,34 @@ Question1_Liza <- tabItem(
   )
 )
 
+Question4 <- tabItem(
+  tabName = "Police",
+  fluidPage(
+    titlePanel(strong("Does Police Involvement in School Shootings Change Across Income Levels?")),
+    p("Graph of police involvement across income levels"),
+    sidebarLayout(
+      sidebarPanel(
+        selectInput(inputId = "Police", label = h3("Were Police Present?"), choices = officer_present, selected = "No"),
+        sliderInput(inputId = "Income", label = h3("Income Level"), min = 39.9, max = 234.5, value = c(50.0, 150.0)),
+      ),
+      mainPanel(
+        tabsetPanel(type = "tabs", 
+                    tabPanel("Police Involvement by Income", 
+                             titlePanel(
+                               strong("Percentage of Police Involvement in School Shootings Across Income Levels")),
+                             plotOutput("Question4"), textOutput("plotdescription"))
+        )
+      )
+    )
+  )
+)
+
 sideBar <- dashboardSidebar(
   sidebarMenu(
     menuItem("Introduction", tabName = "intro"),
     menuItem("Casualties by Income", tabName = "Casualties"),
-    menuItem("Weapontype by Income", tabName = "Weapon")
+    menuItem("Weapontype by Income", tabName = "Weapon"),
+    menuItem("Police Involvement Across Income", tabName = "Police")
   )
 )
 
@@ -134,7 +157,8 @@ body <- dashboardBody(
   tabItems(
     Introduction,
     Question2DemoTab,
-    Question1_Liza
+    Question1_Liza,
+    Question4
   )
 )
 
