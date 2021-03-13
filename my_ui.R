@@ -42,6 +42,17 @@ Introduction <- tabItem(
            from the American Community Survey, a survey that gathers information on ancestry, educational 
            attainment, and income."),
                     br(),
+                    h4("Note: Income level was calculated from the Medium Household Income as a percentage of the average state income for each county. 
+                    The average county had a household income that was 15% below their state average. This alludes to the data being positively skewed. 
+                    We chose to use Median Household income as a percentage of state because rent, salary, childcare cost, minimum wage vary from state to state.
+Average county income as a percentage of the median overall state income looks at how much a county varies in relation to the state it belongs to. A county with an 
+income 86% of the state median income has a median household income 14% below the state's median. This statistic is more easily compared to 
+other counties across state lines as you do not need to account for the multitude of variables that indicate prosperity or lack there of. 
+Moreover, our group also wanted to look at whether income area affect the magnitude of school shootings. To do this we seperated areas into three balanced income brackets:
+low income: counties with median household incomes less than 86.65%  of the state median
+middle income: counties with a median household income between 81.65% to 93.05% of the state median
+high income: counties with a median income greater than 93.05% of the state median."),
+                    br(),
                     h4("Although our group's intention is to merely summarize and consolidate 
            wealth and school shooting incidents, we are interested in whether there are any differences 
            in motivation, weapon, or legal ramifications."),
@@ -54,6 +65,32 @@ Introduction <- tabItem(
                     h4(tags$a(href="https://www.ncbi.nlm.nih.gov/pmc/articles/PMC6199901/", 
                               "https://www.ncbi.nlm.nih.gov/pmc/articles/PMC6199901/"))
                   )
+    )
+  )
+)
+
+Question1_Liza <- tabItem(
+  tabName = "Weapon",
+  fluidPage(
+    titlePanel(strong("Weapon Type")),
+    sidebarLayout(
+      sidebarPanel(
+        radioButtons("weapon",label = "Weapon Type", choices = c("Rifle","Handgun","Shotgun")),
+        p("Note: Income level was calculated from the Medium Household Income as a percentage of the average state income for each county. 
+        The average county had a household income that was 15% below their state average. This alludes to the data being positively skewed.")
+        ),
+      mainPanel(
+        tabsetPanel(type = "tabs",
+                    tabPanel("Weapon", plotOutput("plot"), em(textOutput("desc1")),
+                    p(em("Data is pulled from school shootings since 1970. We found that weapon used is different in each income level. Handguns were the most common weapon used. However,
+                    counties with higher income areas were more 12% more likely to use a handgun than a shooter in a lower income area. 
+                    In lower income areas, shotguns and rifles were more commonly used than middle or high income areas at 3.9% and 11% 
+                    respectively.")
+                      ),
+                    plotOutput("plot2"),
+                    p(em("Police forget to record the schooter's weapontype nearly 20% of the time. the difference between missing shooter records between the
+                    income levels was not significant"))))
+      )
     )
   )
 )
@@ -88,14 +125,15 @@ sideBar <- dashboardSidebar(
   sidebarMenu(
     menuItem("Introduction", tabName = "intro"),
     menuItem("Casualties by Income", tabName = "Casualties"),
-    menuItem("Occurences at each School Level", tabName = "")
+    menuItem("Weapontype by Income", tabname = "Weapon")
   )
 )
 
 body <- dashboardBody(
   tabItems(
     Introduction,
-    Question2DemoTab
+    Question2DemoTab,
+    Question1_Liza
   )
 )
 

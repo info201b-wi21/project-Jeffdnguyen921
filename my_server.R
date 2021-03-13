@@ -94,6 +94,116 @@ Shootings_by_County_fips <- Shootings_by_County_fips %>%
   mutate(info = paste("Date: ", Date, "\nLocation: ", location, "\nSchool: ", School, "\nCasualties: ", Casualties, sep = ""))
 
 ####################################################################################################
+q1_unemployment_df <- select(Unemployment_df, county_fips, area_name, Med_HH_Income_Percent_of_State_Total_2019)
+q1_only_counties <- Unemployment_df[grep("County", q1_unemployment_df$area_name),]
+
+#Q1 proportion ######################################################################################################
+us_city_state_city <- us_cities %>%
+  unite("location", city, state_id, sep = ", ") %>% 
+  select(location, county_fips, lat, lng)
+
+SSDB_df <- SSDB_Raw_Data_df %>%
+  unite("location", City, State, sep = ", ") %>%
+  inner_join(us_city_state_city, by = "location")%>%
+  rename(campus_location = Location)%>%
+  select(Incident_ID, county_fips, Date, School, School_Level, campus_location, location, Situation, Targets, Accomplice,
+         Officer_Involved, Bullied, Domestic_Violence, Gang_Related, Shots_Fired,
+         weapontype) %>% 
+  unique()
+
+q1_county_weapon_income_df <- SSDB_df %>%
+  select(county_fips, weapontype) %>%
+  inner_join(q1_only_counties, by = "county_fips") %>% 
+  select(weapontype, Med_HH_Income_Percent_of_State_Total_2019)
+
+###### low class
+q1_low_rifle <- q1_county_weapon_income_df %>%
+  filter(Med_HH_Income_Percent_of_State_Total_2019 < 81.65) %>%
+  mutate(is_rifle = weapontype == "Rifle" | weapontype == "Multiple Rifles") %>%
+  summarise(total = n(), rifles = sum(is_rifle, na.rm = TRUE), proportion = (rifles / total) * 100) %>%
+  pull(proportion)
+
+q1_low_handgun <- q1_county_weapon_income_df %>%
+  filter(Med_HH_Income_Percent_of_State_Total_2019 < 81.65) %>% 
+  mutate(is_handgun = weapontype == "Handgun" | weapontype == "Multiple Handguns") %>% 
+  summarise(total = n(), handgun = sum(is_handgun, na.rm = TRUE), proportion = (handgun / total) * 100) %>% 
+  pull(proportion)
+
+q1_low_shotgun <- q1_county_weapon_income_df %>%
+  filter(Med_HH_Income_Percent_of_State_Total_2019 < 81.65) %>% 
+  mutate(is_shotgun = weapontype == "Shotgun" | weapontype == "Multiple Shotguns") %>% 
+  summarise(total = n(), shotgun = sum(is_shotgun, na.rm = TRUE), proportion = (shotgun / total) * 100) %>% 
+  pull(proportion)
+
+q1_unknown_low <- q1_county_weapon_income_df %>%
+  filter(Med_HH_Income_Percent_of_State_Total_2019 < 81.65) %>% 
+  mutate(is_unknown = weapontype == "Unknown" | weapontype == "Multiple Unknown" | weapontype == "Other") %>% 
+  summarise(total = n(), unknown = sum(is_unknown, na.rm = TRUE), proportion = (unknown / total) * 100) %>% 
+  pull(proportion)
+
+
+##### mid class
+q1_mid_rifle <- q1_county_weapon_income_df %>% 
+  filter(Med_HH_Income_Percent_of_State_Total_2019 >= 81.65, Med_HH_Income_Percent_of_State_Total_2019 <= 93.05) %>% 
+  mutate(is_rifle = weapontype == "Rifle" | weapontype == "Multiple Rifles") %>% 
+  summarise(total = n(), rifles = sum(is_rifle, na.rm = TRUE), proportion = (rifles / total) * 100)%>% 
+  pull(proportion)
+
+q1_mid_handgun <- q1_county_weapon_income_df %>%
+  filter(Med_HH_Income_Percent_of_State_Total_2019 >= 81.65, Med_HH_Income_Percent_of_State_Total_2019 <= 93.05) %>% 
+  mutate(is_handgun = weapontype == "Handgun" | weapontype == "Multiple Handguns") %>% 
+  summarise(total = n(), handgun = sum(is_handgun, na.rm = TRUE), proportion = (handgun / total) * 100) %>% 
+  pull(proportion)
+
+q1_mid_shotgun <- q1_county_weapon_income_df %>%
+  filter(Med_HH_Income_Percent_of_State_Total_2019 >= 81.65, Med_HH_Income_Percent_of_State_Total_2019 <= 93.05) %>% 
+  mutate(is_shotgun = weapontype == "Shotgun" | weapontype == "Multiple Shotguns") %>% 
+  summarise(total = n(), shotgun = sum(is_shotgun, na.rm = TRUE), proportion = (shotgun / total) * 100) %>% 
+  pull(proportion)
+
+q1_unknown_med <- q1_county_weapon_income_df %>%
+  filter(Med_HH_Income_Percent_of_State_Total_2019 >= 81.65, Med_HH_Income_Percent_of_State_Total_2019 <= 93.05) %>% 
+  mutate(is_unknown = weapontype == "Unknown" | weapontype == "Multiple Unknown" | weapontype == "Other") %>% 
+  summarise(total = n(), unknowns = sum(is_unknown, na.rm = TRUE), proportion = (unknowns / total) * 100) %>% 
+  pull(proportion)
+
+#### high class
+q1_high_rifle <- q1_county_weapon_income_df %>% 
+  filter(Med_HH_Income_Percent_of_State_Total_2019 > 93.05) %>% 
+  mutate(is_rifle = weapontype == "Rifle" | weapontype == "Multiple Rifles") %>% 
+  summarise(total = n(), rifles = sum(is_rifle, na.rm = TRUE), proportion = (rifles / total) * 100) %>% 
+  pull(proportion)
+
+q1_high_handgun <- q1_county_weapon_income_df %>%
+  filter(Med_HH_Income_Percent_of_State_Total_2019 > 93.05) %>%
+  mutate(is_handgun = weapontype == "Handgun" | weapontype == "Multiple Handguns") %>% 
+  summarise(total = n(), handgun = sum(is_handgun, na.rm = TRUE), proportion = (handgun / total) * 100) %>% 
+  pull(proportion)
+
+q1_high_shotgun <- q1_county_weapon_income_df %>%
+  filter(Med_HH_Income_Percent_of_State_Total_2019 > 93.05) %>%
+  mutate(is_shotgun = weapontype == "Shotgun" | weapontype == "Multiple Shotguns") %>% 
+  summarise(total = n(), shotgun = sum(is_shotgun, na.rm = TRUE), proportion = (shotgun / total) * 100) %>% 
+  pull(proportion)
+
+q1_unknown_high <- q1_county_weapon_income_df %>%
+  filter(Med_HH_Income_Percent_of_State_Total_2019 > 93.05) %>% 
+  mutate(is_unknown = weapontype == "Unknown" | weapontype == "Multiple Unknown" | weapontype == "Other") %>% 
+  summarise(total = n(), unknown = sum(is_unknown, na.rm = TRUE), proportion = (unknown / total) * 100) %>% 
+  pull(proportion)
+
+q1_class <- c("Low", "Med", "High")
+q1_proportion_known <- 100-(sum(q1_unknown_low, q1_unknown_med, q1_unknown_high))
+q1_proportion_rifle <- c(q1_low_rifle, q1_mid_rifle, q1_high_rifle)
+q1_proportion_handgun <- c(q1_low_handgun, q1_mid_handgun, q1_high_handgun)
+q1_proportion_shotgun <-c(q1_low_shotgun, q1_mid_shotgun, q1_high_shotgun)
+q1_proportion_unknown <- data.frame(group = c("Known", "Unknown"), value = c(80.22386, 19.77614))
+
+q1_weapontype_rate <- data.frame(q1_class, q1_proportion_rifle, q1_proportion_handgun, q1_proportion_shotgun) %>%
+  rename(Rifle = q1_proportion_rifle, Handgun = q1_proportion_handgun, Shotgun = q1_proportion_shotgun)
+q1_weapontype_rate$q1_class <- factor(q1_weapontype_rate$q1_class, levels = c("Low", "Med", "High"))
+
+#########################################################################################################################
 
 my_server <- function(input, output) {
   
@@ -141,6 +251,27 @@ my_server <- function(input, output) {
     United_States_Unemployment_plot <- ggplotly(United_States_Unemployment_plot, tootltip = "info")
     
     return (United_States_Unemployment_plot)
+  })
+  output$plot <- renderPlot({
+    plot <- ggplot(data=q1_weapontype_rate, mapping = aes_string(x = "q1_class", y = input$weapon, fill = "q1_class")) +
+      geom_col() +
+      labs(x = "Income Level", y = input$weapon, fill = "") +
+      scale_fill_manual(values = c("#d8b365", "#f5f5f5", "#5ab4ac")) +
+      scale_y_continuous(labels = scales::percent_format(scale = 1))
+    return(plot)
+  })
+  output$plot2 <- renderPlot({
+    plot2 <- ggplot(q1_proportion_unknown, aes(x=" ", y=value, fill=group))+
+      geom_bar(width = 1, stat = "identity", color = "white") +
+      coord_polar("y", start=0) +
+      labs(title = "Proportion of Unknown Weapontype", x = "", y = "", fill = "") +
+      theme_void() +
+      theme(plot.title = element_text(hjust=.5)) +
+      scale_fill_manual(values=c("#d8b365", "#f5f5f5"))
+    return(plot2)
+  })
+  output$desc1 <- renderText({
+    paste("A graphical representation of income level and the proportion of", input$weapon, "use nationwide")
   })
 }
 
