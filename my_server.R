@@ -216,12 +216,10 @@ my_server <- function(input, output) {
       filter(School_Level == input$School3)%>%
       filter(income_percent >= input$Income3[1], income_percent <= input$Income3[2])%>%
       group_by(School_Level)%>%
-      summarise(Occurrence = n())%>%
-      pull(Occurrence)
+      summarise(Occurrence = n())
     paste("This graph shows a histogram outlining the occurrences of shootings at", input$School3, "school levels. 
           relative to the income percentage from", input$Income3[1], "to", input$Income3[2], 
-    "and the date from", input$Date3[1], "to", input$Date3[2], "in the United States. For", input$School3, "school levels from", input$Income3[1], "to", input$Income3[2],"and the date from", input$Date3[1], "to", input$Date3[2], 
-    "the number of shootings is", question_answer, "in that set. Through this we can see how income relates to the occurrences of shootings.
+    "and the date from", input$Date3[1], "to", input$Date3[2], "in the United States. Through this we can see how income relates to the occurrences of shootings.
     In the graph we found that many of the shootings happened around the 100% income percentage. This is constant with the constituted average of these school shootings around 98.54%. 
     The income brackets (low, medium, and high) described in the introductions shows that many of the shootings happen at a higher income bracket.
     Getting to the school levels, the highest number of shooting occurrences came at the high school level with 600 occurrences. The lowest number of shooting occurrences came from low income middle schools at 27 occurrences. 
