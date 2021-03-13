@@ -53,6 +53,7 @@ low income: counties with median household incomes less than 86.65%  of the stat
 middle income: counties with a median household income between 81.65% to 93.05% of the state median
 high income: counties with a median income greater than 93.05% of the state median."),
                     br(),
+
                     h4("Although our group's intention is to merely summarize and consolidate 
            wealth and school shooting incidents, we are interested in whether there are any differences 
            in motivation, weapon, or legal ramifications."),
@@ -69,11 +70,10 @@ high income: counties with a median income greater than 93.05% of the state medi
   )
 )
 
-
 Question2DemoTab <- tabItem(
   tabName = "Casualties",
   fluidPage(
-    titlePanel("Casualties in Regard to Income"),
+    titlePanel(strong("Does income impact school shooting casualties?")),
     sidebarLayout(
       sidebarPanel(
         textInput(inputId = "state2", label = "What state would you like to view? (Default is all)"),
@@ -91,6 +91,32 @@ Question2DemoTab <- tabItem(
                     the bigger the green circle representing each shooting, the more casualties the
                     shooting had."))
         )
+
+      )
+    )
+  )
+)
+
+Question3 <- tabItem(
+  tabName = "Occurrences",
+  fluidPage(
+    titlePanel(strong("Of the various income area what are the occurrences of shootings through the years?")),
+    sidebarLayout(
+      sidebarPanel(
+        selectInput(inputId = "School3", label = h3("What School Level would you like to View"), choices = school_levels, selected = "All"),
+        sliderInput(inputId = "Income3", label = h3("What Income percentage would you like to View"), min = 39.9, max = 234.5, value = c(50.0, 150.0)),
+        dateRangeInput(inputId = "Date3", label = h3("What Date range would you like to View"), start = "1970-01-05", end = "2021-01-27", min = "1970-01-05", max = "2021-01-27"),
+      ),
+      mainPanel(
+        tabsetPanel(type = "tabs", 
+                    tabPanel("Occurrences", 
+                             titlePanel(
+                               strong("Occurrence for each school level")),
+                               p("Slide for income brackets, insert dates to analyze, check the school levels to analyze"),
+                             plotOutput("Question3"), 
+                             textOutput("desc3"))
+                         
+        )
       )
     )
   )
@@ -99,7 +125,7 @@ Question2DemoTab <- tabItem(
 Question1_Liza <- tabItem(
   tabName = "Weapon",
   fluidPage(
-    titlePanel(strong("Weapon Type")),
+    titlePanel(strong("Does weapon type change based on income?")),
     sidebarLayout(
       sidebarPanel(
         radioButtons("weapon",label = "Weapon Type", choices = c("Rifle","Handgun","Shotgun")),
@@ -149,6 +175,7 @@ sideBar <- dashboardSidebar(
     menuItem("Introduction", tabName = "intro"),
     menuItem("Casualties by Income", tabName = "Casualties"),
     menuItem("Weapontype by Income", tabName = "Weapon"),
+    menuItem("Occurrences at each School Level", tabName = "Occurrences"),
     menuItem("Police Involvement Across Income", tabName = "Police")
   )
 )
@@ -158,9 +185,11 @@ body <- dashboardBody(
     Introduction,
     Question2DemoTab,
     Question1_Liza,
+    Question3,
     Question4
   )
 )
+
 
 my_ui <- dashboardPage(
   skin = "black",

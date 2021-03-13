@@ -4,7 +4,6 @@ library(dplyr)
 library(tidyverse)
 library(readr)
 library(maps)
-library(rstatix)
 library(stringr)
 library(plotly)
 
@@ -246,6 +245,38 @@ SSDB_officer_involvement_income_df <- SSDB_officer_df %>%
 officer_present <- c("Yes", "No")
 #############################################################################################################
 
+##################################################################################################
+# Q3: Of high income areas, what are the occurrences of shootings at the different levels of schools?
+
+SSDB_Unemployment_df <- SSDB_Final_df %>%
+  inner_join(Unemployment_df)%>%
+  select(School_Level, Date, Fatal, Wounded, Med_HH_Income_Percent_of_State_Total_2019)%>%
+  mutate(Shootings = 1)%>%
+  mutate_if(is.numeric, ~replace(., is.na(.), 0))%>%
+  mutate(Dates = as.Date(Date))%>%
+  rename(income_percent = Med_HH_Income_Percent_of_State_Total_2019)
+
+All_Schools <- SSDB_Unemployment_df%>%
+  filter(School_Level != "Other",
+         School_Level != "6-12",
+         School_Level != "K-12",
+         School_Level != "K-8",
+         School_Level != "Unknown")
+
+All_Schools$School_Level <- factor(All_Schools$School_Level,
+                                   levels = c("Elementary",
+                                              "Middle",
+                                              "Junior High",
+                                              "High"))
+
+school_levels <- c("All",
+                   "Elementary",
+                   "Middle",
+                   "Junior High",
+                   "High")
+
+impact_levels <- c("Occurrences", "Deaths", "Injured")
+
 my_server <- function(input, output) {
   
   output$question2 <- renderPlotly ({
@@ -292,6 +323,45 @@ my_server <- function(input, output) {
     United_States_Unemployment_plot <- ggplotly(United_States_Unemployment_plot, tootltip = "info")
     
     return (United_States_Unemployment_plot)
+  })
+  output$Question3 <- renderPlot({
+    Shooting_Levels_plots <- SSDB_Unemployment_df%>%
+      filter(Dates >= input$Date3[1], Dates <= input$Date3[2])%>%
+      filter(School_Level == input$School3)%>%
+      filter(income_percent >= input$Income3[1], income_percent <= input$Income3[2])
+    if(input$School3 == "All") {
+      Shooting_Levels_plots <- All_Schools%>%
+      filter(Dates >= input$Date3[1], Dates <= input$Date3[2])%>%
+      filter(income_percent >= input$Income3[1], income_percent <= input$Income3[2])
+      
+    }
+    Occurrence_plot <- ggplot(data = Shooting_Levels_plots, aes(x = income_percent, fill = School_Level, color = School_Level)) + 
+      geom_histogram(alpha = 0.5, position = "identity") +
+      scale_x_continuous(limits = input$Income3, labels = scales::percent_format(scale = 1)) +
+      scale_color_brewer(palette = "Paired") +
+      scale_fill_brewer(palette = "Paired") +
+      labs(title = "Shootings Across School Levels",
+           x = "Income Percentage",
+           y = "Occurrences")
+    
+    return(Occurrence_plot)
+  })
+  output$desc3 <- renderText({
+    question_answer <- SSDB_Unemployment_df%>%
+      filter(Dates >= input$Date3[1], Dates <= input$Date3[2])%>%
+      filter(School_Level == input$School3)%>%
+      filter(income_percent >= input$Income3[1], income_percent <= input$Income3[2])%>%
+      group_by(School_Level)%>%
+      summarise(Occurrence = n())
+    paste("This graph shows a histogram outlining the occurrences of shootings at", input$School3, "school levels. 
+          relative to the income percentage from", input$Income3[1], "to", input$Income3[2], 
+    "and the date from", input$Date3[1], "to", input$Date3[2], "in the United States. Through this we can see how income relates to the occurrences of shootings.
+    In the graph we found that many of the shootings happened around the 100% income percentage. This is constant with the constituted average of these school shootings around 98.54%. 
+    The income brackets (low, medium, and high) described in the introductions shows that many of the shootings happen at a higher income bracket.
+    Getting to the school levels, the highest number of shooting occurrences came at the high school level with 600 occurrences. The lowest number of shooting occurrences came from low income middle schools at 27 occurrences. 
+    The three highest shooting years were 2018, 2019, 2020 in this time span the areas where these shootings occurred averaged out to an income of 101.094% constant with other data. 
+    Overall there is a misconceptions that shootings happen in poor, underserved communities, according to our data, we found that areas around 100% of their states income are more likely to experience a school shooting, especially in recent years."
+    )
   })
   
   output$plot <- renderPlot({
