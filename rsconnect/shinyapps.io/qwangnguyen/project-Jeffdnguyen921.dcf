@@ -1,0 +1,13 @@
+name: project-Jeffdnguyen921
+title: project-Jeffdnguyen921
+username:
+account: qwangnguyen
+server: shinyapps.io
+hostUrl: https://api.shinyapps.io/v1
+appId: 3784420
+bundleId: 4338736
+url: https://qwangnguyen.shinyapps.io/project-Jeffdnguyen921/
+when: 1615614561.41547
+asMultiple: FALSE
+asStatic: FALSE
+ignoredFiles: analysis.R|index.html|index.Rmd|Luka_question.R|README.md

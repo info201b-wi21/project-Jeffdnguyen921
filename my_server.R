@@ -309,14 +309,12 @@ my_server <- function(input, output) {
       filter(year >= input$years2[1]) %>%
       filter(year <= input$years2[2])
     
-    if(input$state2 != "") {
       United_States_Unemployment_df <- United_States_Unemployment_df %>%
         filter(region == tolower(input$state2))
       Shootings_by_County_fips <- Shootings_by_County_fips %>%
         filter(tolower(state_name) == tolower(input$state2))
       United_States_Shape <- United_States_Shape %>%
         filter(region == tolower(input$state2))
-    }
     
     United_States_Unemployment_plot <-
       ggplot() +

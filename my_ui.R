@@ -76,7 +76,7 @@ Question2DemoTab <- tabItem(
     titlePanel(strong("Does income impact school shooting casualties?")),
     sidebarLayout(
       sidebarPanel(
-        textInput(inputId = "state2", label = "What state would you like to view? (Default is all)"),
+        textInput(inputId = "state2", label = "What state would you like to view? (Default is all)", value = "Washington"),
         sliderInput("years2", label = h3("What years would you like to view?"), min = 1970, 
                     max = 2021, value = c(1980, 2000)),
         checkboxInput("incomeGradient", label = "Income Gradient", value = TRUE),
