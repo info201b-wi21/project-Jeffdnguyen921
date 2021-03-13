@@ -171,13 +171,59 @@ Question4 <- tabItem(
   )
 )
 
+team <- tabItem(
+  tabName = "Teamwork",
+  fluidPage(
+    box(title = strong("Luka Marceta"), status = "danger",
+        h4("I am a sophomore at UW, and I am currently undeclared. 
+          However, I have taken an interest in informatics as of 
+          late and am planning to apply to the major. My inquisitive 
+          nature lends itself to comprehensive research and data collection, 
+          while my effective communication will help maintain a steady and 
+          high quality of work. Like Jeffrey, I am eager to help in any way 
+          possible. In the free time, I enjoy hanging out with friends and 
+          watching some good shows.")
+    ),
+    br(),
+    box(title = strong("Jeffrey Nguyen"), status = "primary",
+        h4("Currently a Junior at the University of Washington. Looking to 
+           improve my project management skills as part of this team. 
+           Into the research and data collection portion of this project and 
+           looking to understand the fundamental connection of income in relation 
+           to school shootings. Looking to use my communication skills and help my 
+           group in any way I can.  In the free time, I enjoy watching sports from 
+           basketball to football and love to play board games and watch anime with 
+           the family.")
+    ),
+    br(),
+    box(title = strong("Liza Moore"), status = "warning",
+        h4("Senior majoring in Psychology and Gender, Women, Sexuality Studies. 
+           I am interested in how social identities influence treatment in the 
+           workplace or other professional environments. I am interested in 
+           receiving a Ph.D. in a field related to Industrial and Organizational 
+           Psychology. Outside of school, I love listening to psychology podcasts 
+           scrapbooking.")
+    ),
+    br(),
+    box(title = strong("Quang Nguyen"), status = "success",
+        h4("Currently a freshman at UW and currently undeclared. Looking to find my 
+           interest by studying a variety of different subjects. I am looking to 
+           working as part of a team through research and data. I am hoping to 
+           improve my skills throughout the project. I am looking to help out the 
+           team throughout the coding process. In my free time, I enjoy playing games 
+           and watching NFL football during the season.")
+    )
+  )
+)
+
 sideBar <- dashboardSidebar(
   sidebarMenu(
     menuItem("Introduction", tabName = "intro"),
     menuItem("Casualties by Income", tabName = "Casualties"),
     menuItem("Weapontype by Income", tabName = "Weapon"),
     menuItem("Occurrences at each School Level", tabName = "Occurrences"),
-    menuItem("Police Involvement Across Income", tabName = "Police")
+    menuItem("Police Involvement Across Income", tabName = "Police"),
+    menuItem("Meet our Team", tabName = "Teamwork")
   )
 )
 
@@ -187,7 +233,8 @@ body <- dashboardBody(
     Question2DemoTab,
     Question1_Liza,
     Question3,
-    Question4
+    Question4,
+    team
   )
 )
 
