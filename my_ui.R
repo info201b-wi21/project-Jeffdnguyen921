@@ -69,31 +69,6 @@ high income: counties with a median income greater than 93.05% of the state medi
   )
 )
 
-Question1_Liza <- tabItem(
-  tabName = "Weapon",
-  fluidPage(
-    titlePanel(strong("Weapon Type")),
-    sidebarLayout(
-      sidebarPanel(
-        radioButtons("weapon",label = "Weapon Type", choices = c("Rifle","Handgun","Shotgun")),
-        p("Note: Income level was calculated from the Medium Household Income as a percentage of the average state income for each county. 
-        The average county had a household income that was 15% below their state average. This alludes to the data being positively skewed.")
-        ),
-      mainPanel(
-        tabsetPanel(type = "tabs",
-                    tabPanel("Weapon", plotOutput("plot"), em(textOutput("desc1")),
-                    p(em("Data is pulled from school shootings since 1970. We found that weapon used is different in each income level. Handguns were the most common weapon used. However,
-                    counties with higher income areas were more 12% more likely to use a handgun than a shooter in a lower income area. 
-                    In lower income areas, shotguns and rifles were more commonly used than middle or high income areas at 3.9% and 11% 
-                    respectively.")
-                      ),
-                    plotOutput("plot2"),
-                    p(em("Police forget to record the schooter's weapontype nearly 20% of the time. the difference between missing shooter records between the
-                    income levels was not significant"))))
-      )
-    )
-  )
-)
 
 Question2DemoTab <- tabItem(
   tabName = "Casualties",
@@ -121,11 +96,37 @@ Question2DemoTab <- tabItem(
   )
 )
 
+Question1_Liza <- tabItem(
+  tabName = "Weapon",
+  fluidPage(
+    titlePanel(strong("Weapon Type")),
+    sidebarLayout(
+      sidebarPanel(
+        radioButtons("weapon",label = "Weapon Type", choices = c("Rifle","Handgun","Shotgun")),
+        p("Note: Income level was calculated from the Medium Household Income as a percentage of the average state income for each county. 
+        The average county had a household income that was 15% below their state average. This alludes to the data being positively skewed.")
+      ),
+      mainPanel(
+        tabsetPanel(type = "tabs",
+                    tabPanel("Weapon", plotOutput("plot"),
+                    p(em("Data is pulled from school shootings since 1970. We found that weapon used is different in each income level. Handguns were the most common weapon used. However,
+                    counties with higher income areas were more 12% more likely to use a handgun than a shooter in a lower income area. 
+                    In lower income areas, shotguns and rifles were more commonly used than middle or high income areas at 3.9% and 11% 
+                    respectively.")),
+                    plotOutput("plot2"),
+                    p(em("Police forget to record the schooter's weapontype nearly 20% of the time. the difference between missing shooter records between the
+                    income levels was not significant")),
+                    textOutput("desc1")))
+      )
+    )
+  )
+)
+
 sideBar <- dashboardSidebar(
   sidebarMenu(
     menuItem("Introduction", tabName = "intro"),
     menuItem("Casualties by Income", tabName = "Casualties"),
-    menuItem("Weapontype by Income", tabname = "Weapon")
+    menuItem("Weapontype by Income", tabName = "Weapon")
   )
 )
 
