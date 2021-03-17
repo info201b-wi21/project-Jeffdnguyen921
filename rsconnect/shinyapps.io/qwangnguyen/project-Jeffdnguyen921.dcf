@@ -5,9 +5,9 @@ account: qwangnguyen
 server: shinyapps.io
 hostUrl: https://api.shinyapps.io/v1
 appId: 3784420
-bundleId: 4338736
+bundleId: 4356359
 url: https://qwangnguyen.shinyapps.io/project-Jeffdnguyen921/
-when: 1615614561.41547
+when: 1615951839.73913
 asMultiple: FALSE
 asStatic: FALSE
 ignoredFiles: analysis.R|index.html|index.Rmd|Luka_question.R|README.md

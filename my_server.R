@@ -7,10 +7,10 @@ library(maps)
 library(stringr)
 library(plotly)
 
-us_cities <- read_csv("https://raw.githubusercontent.com/info201b-wi21/project-Jeffdnguyen921/main/data/uscities.csv?token=ANELWS555GBQNJWKXIFPHS3AJSS7G")
-Unemployment_df <- read_csv("https://raw.githubusercontent.com/info201b-wi21/project-Jeffdnguyen921/main/data/Unemployment.Compiled.csv?token=ANELWS342FTH7U7YE626BQ3AJSS4K")
-Victim_df <- read.csv("https://raw.githubusercontent.com/info201b-wi21/project-Jeffdnguyen921/main/data/SSDB_Victim_Raw_Data.csv?token=ANELWSYGEH5CGCPASHMCJRDAJSTDM")
-SSDB_Raw_Data_df <- read_csv("https://raw.githubusercontent.com/info201b-wi21/project-Jeffdnguyen921/main/data/SSDB_Raw_Data_Compiled.csv?token=ANELWSYOEO5UGRFHV26MPJTAJSSY4")
+us_cities <- read_csv("https://raw.githubusercontent.com/info201b-wi21/project-Jeffdnguyen921/main/data/uscities.csv?token=ANELWS24WM45ZVSZL4XDCR3ALKYUO")
+Unemployment_df <- read_csv("https://raw.githubusercontent.com/info201b-wi21/project-Jeffdnguyen921/main/data/Unemployment.Compiled.csv?token=ANELWS4JD6RKDJJP5DZZGODALKYZ2")
+Victim_df <- read.csv("https://raw.githubusercontent.com/info201b-wi21/project-Jeffdnguyen921/main/data/SSDB_Victim_Raw_Data.csv?token=ANELWS3AYJVC2ADQU4TIMHTALKY4K")
+SSDB_Raw_Data_df <- read_csv("https://raw.githubusercontent.com/info201b-wi21/project-Jeffdnguyen921/main/data/SSDB_Raw_Data_Compiled.csv?token=ANELWS4IRCAGK5SG3TBJNCDALKY6C")
 Unemployment_df <- Unemployment_df %>%
   rename(county_fips = fips_txt)
 
